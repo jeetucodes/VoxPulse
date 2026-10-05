@@ -78,24 +78,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Subtle architect dot grid */}
           <div className="absolute inset-0 bg-dot-pattern opacity-60"></div>
 
-          {/* Floating Iridescent Water Bubbles (Beautifully Framed on Mobile, Grand & Majestic on Desktop) */}
-          {/* Bubble 1: Top-left vibrant water bubble */}
-          <div className="water-bubble w-36 h-36 sm:w-80 sm:h-80 lg:w-[350px] lg:h-[350px] -top-6 -left-8 sm:-top-16 sm:-left-20 animate-bubble-1 opacity-85 sm:opacity-90"></div>
+          {/* Floating Iridescent Water Bubbles (Mobile: Exactly 2 Big Statement Bubbles | Desktop: All 8 Grand Bubbles) */}
+          {/* Bubble 1: Top-left big water bubble (large statement bubble on both mobile and desktop) */}
+          <div className="water-bubble w-48 h-48 sm:w-80 sm:h-80 lg:w-[350px] lg:h-[350px] -top-8 -left-12 sm:-top-16 sm:-left-20 animate-bubble-1 opacity-85 sm:opacity-90"></div>
           
-          {/* Bubble 2: Top-right vibrant water bubble */}
-          <div className="water-bubble w-32 h-32 sm:w-72 sm:h-72 lg:w-[300px] lg:h-[300px] top-2 -right-8 sm:top-10 sm:-right-16 animate-bubble-2 opacity-80 sm:opacity-85"></div>
+          {/* Bubble 2: Top-right big water bubble (large statement bubble on both mobile and desktop) */}
+          <div className="water-bubble w-44 h-44 sm:w-72 sm:h-72 lg:w-[300px] lg:h-[300px] top-4 -right-10 sm:top-10 sm:-right-16 animate-bubble-2 opacity-80 sm:opacity-85"></div>
           
-          {/* Bubble 3: Mid-left floating water bubble */}
-          <div className="water-bubble w-28 h-28 sm:w-56 sm:h-56 lg:w-64 lg:h-64 top-[46%] -left-8 sm:left-[4%] animate-bubble-3 opacity-80"></div>
+          {/* Bubble 3: Desktop-only mid-left bubble */}
+          <div className="hidden sm:block water-bubble sm:w-56 sm:h-56 lg:w-64 lg:h-64 top-[50%] left-[1%] sm:left-[4%] animate-bubble-3 opacity-80"></div>
           
-          {/* Bubble 4: Mid-right floating water bubble */}
-          <div className="water-bubble w-28 h-28 sm:w-48 sm:h-48 lg:w-56 lg:h-56 top-[52%] -right-8 sm:right-[6%] animate-bubble-4 opacity-75 sm:opacity-80"></div>
+          {/* Bubble 4: Desktop-only mid-right bubble */}
+          <div className="hidden sm:block water-bubble sm:w-48 sm:h-48 lg:w-56 lg:h-56 top-[54%] right-[2%] sm:right-[6%] animate-bubble-4 opacity-80"></div>
           
           {/* Bubble 5: Desktop-only center accent bubble */}
           <div className="hidden sm:block water-bubble sm:w-32 sm:h-32 top-[12%] left-[46%] animate-bubble-1 opacity-75" style={{animationDelay: '2.5s'}}></div>
           
-          {/* Bubble 6: Bottom accent water bubble */}
-          <div className="water-bubble w-24 h-24 sm:w-36 sm:h-36 bottom-4 -right-4 sm:bottom-6 sm:right-[24%] animate-bubble-3 opacity-75 sm:opacity-70" style={{animationDelay: '1.5s'}}></div>
+          {/* Bubble 6: Desktop-only bottom subtle accent */}
+          <div className="hidden sm:block water-bubble sm:w-36 sm:h-36 bottom-6 right-[24%] animate-bubble-3 opacity-70" style={{animationDelay: '1.5s'}}></div>
           
           {/* Bubble 7: Desktop-only micro glint bubble near text */}
           <div className="hidden sm:block water-bubble sm:w-18 sm:h-18 top-[36%] left-[20%] animate-bubble-2 opacity-75" style={{animationDelay: '3.2s'}}></div>
