@@ -78,32 +78,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Subtle architect dot grid */}
           <div className="absolute inset-0 bg-dot-pattern opacity-60"></div>
 
-          {/* Floating Iridescent Water Bubbles (Mobile: Exactly 1 Single Giant Bubble with Seamless 60fps Loop | Desktop: All 8 Grand Bubbles) */}
-          {/* Bubble 1: The Giant Statement Bubble (Single 320px bubble on mobile, 480px on desktop) */}
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 sm:-top-16 sm:left-[6%] sm:translate-x-0 w-80 h-80 sm:w-[420px] sm:h-[420px] lg:w-[480px] lg:h-[480px] pointer-events-none z-0">
-            <div className="giant-hero-bubble w-full h-full opacity-80 sm:opacity-90"></div>
+          {/* Floating Realistic Iridescent Soap Bubbles (Mobile: 1 lower centered bubble | Desktop: 8 non-overlapping grand bubbles) */}
+          {/* Bubble 1: The Giant Statement Bubble (Mobile: lowered to top-28; Desktop: top-left flank) */}
+          <div className="absolute top-28 sm:top-6 left-1/2 -translate-x-1/2 sm:left-[4%] lg:left-[5%] sm:translate-x-0 w-72 h-72 sm:w-[340px] sm:h-[340px] lg:w-[380px] lg:h-[380px] pointer-events-none z-0">
+            <div className="giant-hero-bubble w-full h-full opacity-85 sm:opacity-90"></div>
           </div>
           
-          {/* Bubble 2: Desktop-only top-right bubble */}
-          <div className="hidden sm:block water-bubble sm:w-72 sm:h-72 lg:w-[300px] lg:h-[300px] top-10 -right-16 animate-bubble-2 opacity-85"></div>
+          {/* Bubble 2: Desktop-only top-right grand bubble */}
+          <div className="hidden sm:block water-bubble sm:w-60 sm:h-60 lg:w-72 lg:h-72 top-6 right-[4%] lg:right-[6%] animate-bubble-2 opacity-85"></div>
           
-          {/* Bubble 3: Desktop-only mid-left bubble */}
-          <div className="hidden sm:block water-bubble sm:w-56 sm:h-56 lg:w-64 lg:h-64 top-[50%] left-[1%] sm:left-[4%] animate-bubble-3 opacity-80"></div>
+          {/* Bubble 3: Desktop-only mid-lower left bubble (Well below Bubble 1, zero overlap) */}
+          <div className="hidden sm:block water-bubble sm:w-48 sm:h-48 lg:w-56 lg:h-56 top-[58%] left-[2%] lg:left-[4%] animate-bubble-3 opacity-80"></div>
           
-          {/* Bubble 4: Desktop-only mid-right bubble */}
-          <div className="hidden sm:block water-bubble sm:w-48 sm:h-48 lg:w-56 lg:h-56 top-[54%] right-[2%] sm:right-[6%] animate-bubble-4 opacity-80"></div>
+          {/* Bubble 4: Desktop-only mid-lower right bubble (Well below Bubble 2, zero overlap) */}
+          <div className="hidden sm:block water-bubble sm:w-44 sm:h-44 lg:w-52 lg:h-52 top-[52%] right-[2%] lg:right-[5%] animate-bubble-4 opacity-80"></div>
           
-          {/* Bubble 5: Desktop-only center accent bubble */}
-          <div className="hidden sm:block water-bubble sm:w-32 sm:h-32 top-[12%] left-[46%] animate-bubble-1 opacity-75" style={{animationDelay: '2.5s'}}></div>
+          {/* Bubble 5: Desktop-only high-sky accent top-left (tucked high, away from Bubble 1) */}
+          <div className="hidden sm:block water-bubble sm:w-20 sm:h-20 -top-6 left-[22%] lg:left-[24%] animate-bubble-1 opacity-70" style={{animationDelay: '1.2s'}}></div>
           
-          {/* Bubble 6: Desktop-only bottom subtle accent */}
-          <div className="hidden sm:block water-bubble sm:w-36 sm:h-36 bottom-6 right-[24%] animate-bubble-3 opacity-70" style={{animationDelay: '1.5s'}}></div>
+          {/* Bubble 6: Desktop-only high-sky accent top-right (tucked high, away from Bubble 2) */}
+          <div className="hidden sm:block water-bubble sm:w-24 sm:h-24 -top-8 right-[24%] lg:right-[26%] animate-bubble-3 opacity-70" style={{animationDelay: '2.5s'}}></div>
           
-          {/* Bubble 7: Desktop-only micro glint bubble near text */}
-          <div className="hidden sm:block water-bubble sm:w-18 sm:h-18 top-[36%] left-[20%] animate-bubble-2 opacity-75" style={{animationDelay: '3.2s'}}></div>
+          {/* Bubble 7: Desktop-only bottom-left flank accent (below content) */}
+          <div className="hidden sm:block water-bubble sm:w-28 sm:h-28 top-[84%] left-[12%] lg:left-[16%] animate-bubble-2 opacity-75" style={{animationDelay: '3.2s'}}></div>
           
-          {/* Bubble 8: Desktop-only micro glint bubble near CTA */}
-          <div className="hidden sm:block water-bubble sm:w-16 sm:h-16 bottom-16 left-[30%] animate-bubble-4 opacity-70" style={{animationDelay: '4s'}}></div>
+          {/* Bubble 8: Desktop-only bottom-right flank accent (below content) */}
+          <div className="hidden sm:block water-bubble sm:w-32 sm:h-32 top-[80%] right-[14%] lg:right-[18%] animate-bubble-4 opacity-75" style={{animationDelay: '4s'}}></div>
         </div>
 
         {/* Hero content — constrained max-width */}

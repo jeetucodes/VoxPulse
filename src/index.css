@@ -625,72 +625,85 @@ input[type="range"]::-webkit-slider-runnable-track {
 }
 
 /* ============================================================== */
-/* FLOATING WATER BUBBLES ANIMATION (GPU Accelerated & Smooth)    */
+/* ============================================================== */
+/* FLOATING REALISTIC SOAP BUBBLES (GPU Accelerated & Shimmering) */
 /* ============================================================== */
 .water-bubble {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
   background: radial-gradient(
-    circle at 34% 24%,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.7) 16%,
-    rgba(240, 249, 255, 0.45) 32%,
-    rgba(216, 180, 254, 0.3) 50%,
-    rgba(244, 114, 182, 0.22) 68%,
-    rgba(56, 189, 248, 0.3) 85%,
-    rgba(255, 255, 255, 0.85) 100%
+    circle at 32% 26%,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.12) 18%,
+    rgba(240, 249, 255, 0.05) 36%,
+    rgba(216, 180, 254, 0.14) 55%,
+    rgba(244, 114, 182, 0.18) 72%,
+    rgba(56, 189, 248, 0.22) 88%,
+    rgba(255, 255, 255, 0.68) 100%
   );
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
   box-shadow: 
-    inset 0 -14px 28px rgba(124, 58, 237, 0.16),
-    inset 0 14px 28px rgba(56, 189, 248, 0.18),
-    inset 0 0 20px rgba(244, 114, 182, 0.14),
-    0 24px 50px -10px rgba(99, 102, 241, 0.16);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+    inset 0 10px 22px rgba(255, 255, 255, 0.85),
+    inset 0 -12px 24px rgba(168, 85, 247, 0.22),
+    inset 12px 0 24px rgba(56, 189, 248, 0.2),
+    inset -12px 0 24px rgba(244, 114, 182, 0.2),
+    inset 0 0 16px rgba(255, 255, 255, 0.5),
+    0 16px 36px -8px rgba(124, 58, 237, 0.12),
+    0 6px 16px -4px rgba(56, 189, 248, 0.1);
+  backdrop-filter: blur(2px) saturate(125%);
+  -webkit-backdrop-filter: blur(2px) saturate(125%);
   will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
 }
 
-/* Primary glossy sunlight glint highlight */
+/* Primary glossy sunlight crescent glint highlight */
 .water-bubble::before {
   content: '';
   position: absolute;
-  top: 12%;
-  left: 16%;
-  width: 32%;
-  height: 20%;
+  top: 9%;
+  left: 14%;
+  width: 40%;
+  height: 25%;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.5) 100%);
-  transform: rotate(-35deg);
-  filter: blur(0.4px);
+  border-top: 3.5px solid rgba(255, 255, 255, 0.98);
+  border-left: 2px solid rgba(255, 255, 255, 0.85);
+  border-right: 1px solid transparent;
+  border-bottom: 0px solid transparent;
+  transform: rotate(-32deg);
+  filter: drop-shadow(0 0 2.5px rgba(255, 255, 255, 0.85));
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.35) 40%, transparent 75%);
 }
 
 /* Secondary bottom refracted rainbow glow */
 .water-bubble::after {
   content: '';
   position: absolute;
-  bottom: 12%;
-  right: 16%;
-  width: 26%;
-  height: 16%;
+  bottom: 11%;
+  right: 14%;
+  width: 34%;
+  height: 20%;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.7) 0%, rgba(244, 114, 182, 0.3) 60%, transparent 100%);
-  filter: blur(1px);
+  border-bottom: 2.5px solid rgba(244, 114, 182, 0.7);
+  border-right: 2px solid rgba(56, 189, 248, 0.7);
+  border-top: 0px solid transparent;
+  border-left: 0px solid transparent;
+  transform: rotate(-25deg);
+  filter: blur(0.5px);
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.45) 0%, rgba(244, 114, 182, 0.22) 50%, transparent 80%);
 }
 
-/* Floating organic bubble animations (60fps translate3d) */
+/* Floating organic bubble animations (Contained drift, zero collision) */
 @keyframes bubbleFloat1 {
   0%, 100% {
     transform: translate3d(0, 0, 0) scale(1, 1);
   }
   33% {
-    transform: translate3d(35px, -50px, 0) scale(1.04, 0.96);
+    transform: translate3d(14px, -18px, 0) scale(1.02, 0.98);
   }
   66% {
-    transform: translate3d(-30px, -20px, 0) scale(0.96, 1.04);
+    transform: translate3d(-12px, -8px, 0) scale(0.98, 1.02);
   }
 }
 
@@ -698,11 +711,11 @@ input[type="range"]::-webkit-slider-runnable-track {
   0%, 100% {
     transform: translate3d(0, 0, 0) scale(1, 1);
   }
-  30% {
-    transform: translate3d(-45px, -60px, 0) scale(0.96, 1.04);
+  35% {
+    transform: translate3d(-16px, 15px, 0) scale(0.98, 1.02);
   }
   70% {
-    transform: translate3d(35px, -30px, 0) scale(1.04, 0.96);
+    transform: translate3d(12px, -12px, 0) scale(1.02, 0.98);
   }
 }
 
@@ -711,10 +724,10 @@ input[type="range"]::-webkit-slider-runnable-track {
     transform: translate3d(0, 0, 0) scale(1, 1);
   }
   40% {
-    transform: translate3d(50px, -40px, 0) scale(1.03, 0.97);
+    transform: translate3d(16px, 14px, 0) scale(1.02, 0.98);
   }
   80% {
-    transform: translate3d(-35px, -55px, 0) scale(0.97, 1.03);
+    transform: translate3d(-14px, -15px, 0) scale(0.98, 1.02);
   }
 }
 
@@ -723,7 +736,7 @@ input[type="range"]::-webkit-slider-runnable-track {
     transform: translate3d(0, 0, 0) scale(1, 1);
   }
   50% {
-    transform: translate3d(-35px, 45px, 0) scale(1.05, 0.95);
+    transform: translate3d(-14px, -16px, 0) scale(1.02, 0.98);
   }
 }
 
@@ -736,7 +749,7 @@ input[type="range"]::-webkit-slider-runnable-track {
 }
 
 .animate-bubble-3 {
-  animation: bubbleFloat3 20s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation: bubbleFloat3 19s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
 .animate-bubble-4 {
@@ -823,58 +836,70 @@ input[type="range"]::-webkit-slider-runnable-track {
   }
 }
 
-/* Seamless Giant Single Hero Bubble (Continuous 60fps Loop, Zero Jitter/Snap) */
+/* Seamless Giant Single Hero Bubble (Realistic Soap Bubble & Organic Float) */
 .giant-hero-bubble {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
   background: radial-gradient(
-    circle at 35% 25%,
-    rgba(255, 255, 255, 0.98) 0%,
-    rgba(255, 255, 255, 0.72) 18%,
-    rgba(240, 249, 255, 0.45) 36%,
-    rgba(216, 180, 254, 0.32) 54%,
-    rgba(244, 114, 182, 0.22) 72%,
-    rgba(56, 189, 248, 0.3) 88%,
-    rgba(255, 255, 255, 0.85) 100%
+    circle at 32% 26%,
+    rgba(255, 255, 255, 0.44) 0%,
+    rgba(255, 255, 255, 0.12) 18%,
+    rgba(240, 249, 255, 0.05) 36%,
+    rgba(216, 180, 254, 0.14) 55%,
+    rgba(244, 114, 182, 0.18) 72%,
+    rgba(56, 189, 248, 0.22) 88%,
+    rgba(255, 255, 255, 0.72) 100%
   );
-  border: 2px solid rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
   box-shadow: 
-    inset 0 -20px 40px rgba(124, 58, 237, 0.16),
-    inset 0 20px 40px rgba(56, 189, 248, 0.2),
-    inset 0 0 30px rgba(244, 114, 182, 0.16),
-    0 24px 60px -10px rgba(99, 102, 241, 0.16);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+    inset 0 14px 28px rgba(255, 255, 255, 0.85),
+    inset 0 -16px 32px rgba(168, 85, 247, 0.22),
+    inset 16px 0 32px rgba(56, 189, 248, 0.2),
+    inset -16px 0 32px rgba(244, 114, 182, 0.2),
+    inset 0 0 24px rgba(255, 255, 255, 0.5),
+    0 22px 50px -10px rgba(124, 58, 237, 0.12),
+    0 8px 24px -5px rgba(56, 189, 248, 0.1);
+  backdrop-filter: blur(2px) saturate(125%);
+  -webkit-backdrop-filter: blur(2px) saturate(125%);
   will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
-  animation: heroSingleGiantBubble 22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  animation: heroSingleGiantBubble 20s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 
 .giant-hero-bubble::before {
   content: '';
   position: absolute;
-  top: 12%;
-  left: 16%;
-  width: 34%;
-  height: 22%;
+  top: 9%;
+  left: 14%;
+  width: 42%;
+  height: 26%;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.5) 100%);
-  transform: rotate(-35deg);
-  filter: blur(0.5px);
+  border-top: 4px solid rgba(255, 255, 255, 0.98);
+  border-left: 2.5px solid rgba(255, 255, 255, 0.88);
+  border-right: 1px solid transparent;
+  border-bottom: 0px solid transparent;
+  transform: rotate(-32deg);
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9));
+  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.35) 40%, transparent 75%);
 }
 
 .giant-hero-bubble::after {
   content: '';
   position: absolute;
-  bottom: 12%;
-  right: 16%;
-  width: 28%;
-  height: 18%;
+  bottom: 11%;
+  right: 14%;
+  width: 36%;
+  height: 22%;
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.7) 0%, rgba(244, 114, 182, 0.3) 60%, transparent 100%);
-  filter: blur(1.2px);
+  border-bottom: 3px solid rgba(244, 114, 182, 0.75);
+  border-right: 2px solid rgba(56, 189, 248, 0.75);
+  border-top: 0px solid transparent;
+  border-left: 0px solid transparent;
+  transform: rotate(-25deg);
+  filter: blur(0.5px);
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5) 0%, rgba(244, 114, 182, 0.22) 50%, transparent 80%);
 }
 
 @keyframes heroSingleGiantBubble {
