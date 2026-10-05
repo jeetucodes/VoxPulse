@@ -402,13 +402,6 @@ export function App() {
 
             </div>
 
-            {/* Ask for Help Speech Assistant (FR-6 & FR-8) */}
-            <section id="section-coach" className="scroll-mt-20 sm:scroll-mt-24" aria-label="Ask for Help">
-              <AskForHelp
-                result={analysisResult}
-                onSeek={handleSeek}
-              />
-            </section>
 
             {/* Change Speech / Try Another Sample Banner */}
             <div className="card-clay p-5 sm:p-6 rounded-3xl border border-white/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-semibold text-slate-700">
@@ -476,6 +469,12 @@ export function App() {
       </p>
     </footer>
   )}
+
+      {/* Floating Speech Assistant (FR-6 & FR-8 Multi-Lingual Full-Screen Chatbot) */}
+      <AskForHelp
+        result={analysisResult}
+        onSeek={handleSeek}
+      />
 
       {/* PRD Section 8 JSON Data Contract Modal */}
       <JsonModal

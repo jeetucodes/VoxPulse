@@ -355,10 +355,13 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="text-xs font-bold text-slate-800">Transcript</span>
                   </button>
                   <button
-                    onClick={() => scrollToSection('section-coach')}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      window.dispatchEvent(new CustomEvent('open-speech-assistant'));
+                    }}
                     className="p-2.5 rounded-xl bg-white border border-slate-200/70 shadow-xs hover:border-violet-300 text-left flex items-center gap-2 transition-all active:scale-95"
                   >
-                    <Clay3DIcon name="bulb" size="xs" />
+                    <Clay3DIcon name="robot" size="xs" />
                     <span className="text-xs font-bold text-slate-800">AI Coach</span>
                   </button>
                 </div>
