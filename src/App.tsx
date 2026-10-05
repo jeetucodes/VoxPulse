@@ -374,8 +374,8 @@ export function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
               
               {/* Temporally Grounded Flaw Cards */}
-              <div className="lg:col-span-6">
-                <section id="section-flaws" className="scroll-mt-20 sm:scroll-mt-24" aria-label="Flaw Cards">
+              <div className="lg:col-span-6 min-w-0">
+                <section id="section-flaws" className="scroll-mt-20 sm:scroll-mt-24 min-w-0" aria-label="Flaw Cards">
                   <FlawCards
                     flaws={analysisResult.flaws}
                     activeFlawId={activeFlawId}
@@ -385,7 +385,7 @@ export function App() {
               </div>
 
               {/* Synchronized Transcript View (FR-9) */}
-              <div className="lg:col-span-6">
+              <div className="lg:col-span-6 min-w-0">
                 <section id="section-transcript" className="scroll-mt-20 sm:scroll-mt-24" aria-label="Transcript Grounding">
                   <TranscriptView
                     transcript={analysisResult.transcript || []}
