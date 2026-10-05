@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { Clock, Zap, Mic, Activity, Pin } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
 import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { AnalysisResult } from '../types/speech';
@@ -143,28 +144,212 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
         </div>
       </div>
 
-      {/* Sub-Metrics Breakdown Cards (3D Clay with Pastel Water Wave Flow) */}
+      {/* Sub-Metrics Breakdown Cards */}
       <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
         
-        {/* Sub-Metrics Breakdown Cards: 2x2 compact grid together on mobile, 2-col on desktop */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2.5 sm:gap-4">
+        {/* ============================================================== */}
+        {/* MOBILE ONLY (< 640px): EK CARD KE ANDAR 4 STICKY NOTE CARDS  */}
+        {/* ============================================================== */}
+        <div className="block sm:hidden card-clay p-3.5 rounded-3xl bg-gradient-to-b from-white via-slate-50 to-purple-50/20 border border-slate-200/90 shadow-clay-card space-y-3 relative overflow-hidden">
+          {/* Parent Card Header with Pin */}
+          <div className="flex items-center justify-between pb-1.5 border-b border-slate-200/70 relative z-10">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-violet-600 text-white flex items-center justify-center shadow-xs">
+                <Pin className="w-3.5 h-3.5 fill-current rotate-45" />
+              </span>
+              <div>
+                <h4 className="text-xs font-black text-slate-900 tracking-tight font-heading">
+                  Vocal Delivery Breakdown
+                </h4>
+                <p className="text-[10px] text-slate-500 font-medium">4 Core Metrics Together</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200">
+              Live Scores
+            </span>
+          </div>
+
+          {/* 2x2 Grid of Sticky Note Cards inside the Parent Card */}
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            
+            {/* Sticky Note 1: Pacing & Cadence */}
+            <div className="sticky-note sticky-purple -rotate-1 p-2.5 flex flex-col justify-between space-y-2 rounded-2xl relative shadow-md">
+              <div className="sticky-tape !w-10 !h-3 !-top-1.5"></div>
+              
+              <div className="flex items-start justify-between gap-1 pt-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-violet-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-slate-900 font-extrabold text-[11px] leading-tight truncate">
+                      Pacing
+                    </span>
+                    <span className="block text-[8px] text-purple-700/80 font-bold uppercase tracking-wider">
+                      Cadence
+                    </span>
+                  </div>
+                </div>
+                <span className="font-black text-slate-900 text-[11px] bg-white/95 text-violet-800 px-1.5 py-0.5 rounded-md border border-purple-300 shadow-xs shrink-0">
+                  {breakdown.pacing}
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1.5 rounded-full bg-purple-200/90 overflow-hidden shadow-inner">
+                <div
+                  className="h-full bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full"
+                  style={{ width: `${breakdown.pacing}%` }}
+                />
+              </div>
+
+              {/* Bottom stats */}
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-700">
+                <span>{participantSummary.avgWpm} WPM</span>
+                <span className="text-violet-700 bg-white/70 px-1 rounded">Target {audioBaselineSummary.avgWpm}</span>
+              </div>
+            </div>
+
+            {/* Sticky Note 2: Fluency & Flow */}
+            <div className="sticky-note sticky-pink rotate-1 p-2.5 flex flex-col justify-between space-y-2 rounded-2xl relative shadow-md">
+              <div className="sticky-tape !w-10 !h-3 !-top-1.5"></div>
+              
+              <div className="flex items-start justify-between gap-1 pt-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <Zap className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-slate-900 font-extrabold text-[11px] leading-tight truncate">
+                      Fluency
+                    </span>
+                    <span className="block text-[8px] text-pink-700/80 font-bold uppercase tracking-wider">
+                      Flow
+                    </span>
+                  </div>
+                </div>
+                <span className="font-black text-slate-900 text-[11px] bg-white/95 text-rose-800 px-1.5 py-0.5 rounded-md border border-rose-300 shadow-xs shrink-0">
+                  {breakdown.fluency}
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1.5 rounded-full bg-rose-200/90 overflow-hidden shadow-inner">
+                <div
+                  className="h-full bg-gradient-to-r from-pink-500 to-rose-600 rounded-full"
+                  style={{ width: `${breakdown.fluency}%` }}
+                />
+              </div>
+
+              {/* Bottom stats */}
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-700">
+                <span>Pause {Math.round(participantSummary.pauseRatio * 100)}%</span>
+                <span className="text-rose-700 bg-white/70 px-1 rounded">&lt;10%</span>
+              </div>
+            </div>
+
+            {/* Sticky Note 3: Articulation */}
+            <div className="sticky-note sticky-green -rotate-1 p-2.5 flex flex-col justify-between space-y-2 rounded-2xl relative shadow-md">
+              <div className="sticky-tape !w-10 !h-3 !-top-1.5"></div>
+              
+              <div className="flex items-start justify-between gap-1 pt-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <Mic className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-slate-900 font-extrabold text-[11px] leading-tight truncate">
+                      Articulation
+                    </span>
+                    <span className="block text-[8px] text-emerald-800/80 font-bold uppercase tracking-wider">
+                      Clarity
+                    </span>
+                  </div>
+                </div>
+                <span className="font-black text-slate-900 text-[11px] bg-white/95 text-emerald-800 px-1.5 py-0.5 rounded-md border border-emerald-300 shadow-xs shrink-0">
+                  {breakdown.articulation}
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1.5 rounded-full bg-emerald-200/90 overflow-hidden shadow-inner">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full"
+                  style={{ width: `${breakdown.articulation}%` }}
+                />
+              </div>
+
+              {/* Bottom stats */}
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-700">
+                <span>Formants</span>
+                <span className="text-emerald-700 bg-white/70 px-1 rounded">Crisp</span>
+              </div>
+            </div>
+
+            {/* Sticky Note 4: Dynamic Pitch */}
+            <div className="sticky-note sticky-yellow rotate-1 p-2.5 flex flex-col justify-between space-y-2 rounded-2xl relative shadow-md">
+              <div className="sticky-tape !w-10 !h-3 !-top-1.5"></div>
+              
+              <div className="flex items-start justify-between gap-1 pt-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <Activity className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-slate-900 font-extrabold text-[11px] leading-tight truncate">
+                      Dynamic
+                    </span>
+                    <span className="block text-[8px] text-amber-800/80 font-bold uppercase tracking-wider">
+                      Pitch
+                    </span>
+                  </div>
+                </div>
+                <span className="font-black text-slate-900 text-[11px] bg-white/95 text-amber-800 px-1.5 py-0.5 rounded-md border border-amber-300 shadow-xs shrink-0">
+                  {breakdown.pitchDynamics}
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full h-1.5 rounded-full bg-amber-200/90 overflow-hidden shadow-inner">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
+                  style={{ width: `${breakdown.pitchDynamics}%` }}
+                />
+              </div>
+
+              {/* Bottom stats */}
+              <div className="flex justify-between items-center text-[9px] font-bold text-slate-700">
+                <span>F0 Range</span>
+                <span className="text-amber-800 bg-white/70 px-1 rounded">{participantSummary.pitchRangeHz}Hz</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ============================================================== */}
+        {/* DESKTOP VIEW (>= 640px): ORIGINAL 2-COLUMN SPACIOUS CARDS      */}
+        {/* ============================================================== */}
+        <div className="hidden sm:grid sm:grid-cols-2 gap-4">
           
           {/* Card 1: Pacing & Cadence (Soft Violet Glow) */}
-          <div className="card-clay card-clay-violet p-3 sm:p-5 flex flex-col justify-between space-y-2 sm:space-y-3 relative overflow-hidden">
+          <div className="card-clay card-clay-violet p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
             <WaterWaveDecoration color="rgba(139, 92, 246, 0.09)" height="h-16" />
-            <div className="relative z-10 flex items-center justify-between text-xs gap-1">
-              <span className="flex items-center gap-1.5 sm:gap-3 font-bold text-slate-800 font-heading min-w-0">
-                <Clay3DIcon name="clock" size="sm" withPedestal className="hidden xs:inline-flex shrink-0" />
-                <div className="min-w-0">
-                  <span className="block text-slate-900 font-extrabold text-[11px] sm:text-sm leading-tight truncate sm:whitespace-normal">Pacing & Cadence</span>
-                  <span className="hidden sm:block text-[10px] text-slate-500 font-normal">Syllables per second</span>
+            <div className="relative z-10 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-violet-50 border border-violet-200 shadow-clay-card flex items-center justify-center shrink-0 text-violet-700">
+                  <Clock className="w-5 h-5 stroke-[2.5]" />
+                </div>
+                <div>
+                  <span className="block text-slate-900 font-extrabold text-sm">Pacing & Cadence</span>
+                  <span className="text-[10px] text-slate-500 font-normal">Syllables per second</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-[11px] sm:text-sm bg-violet-100/80 text-violet-800 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-violet-200/90 shadow-clay-pill shrink-0">
+              <span className="font-black text-slate-900 text-sm bg-violet-100/80 text-violet-800 px-2.5 py-1 rounded-xl border border-violet-200/90 shadow-clay-pill">
                 {breakdown.pacing}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2 sm:h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-violet-500 to-indigo-600 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.pacing}%` }}
@@ -172,28 +357,30 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-white/40 rounded-full" />
               </div>
             </div>
-            <div className="relative z-10 flex flex-col sm:flex-row justify-between text-[10px] sm:text-[11px] font-semibold text-slate-600 gap-0.5">
-              <span className="truncate">Avg: {participantSummary.avgWpm} WPM</span>
-              <span className="text-violet-700 font-bold truncate">Target: {audioBaselineSummary.avgWpm}</span>
+            <div className="relative z-10 flex justify-between text-[11px] font-semibold text-slate-600">
+              <span>Avg: {participantSummary.avgWpm} WPM</span>
+              <span className="text-violet-700 font-bold">Target: {audioBaselineSummary.avgWpm}</span>
             </div>
           </div>
 
           {/* Card 2: Fluency & Flow (Soft Rose/Pink Glow) */}
-          <div className="card-clay card-clay-pink p-3 sm:p-5 flex flex-col justify-between space-y-2 sm:space-y-3 relative overflow-hidden">
+          <div className="card-clay card-clay-pink p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
             <WaterWaveDecoration color="rgba(244, 63, 94, 0.08)" height="h-16" />
-            <div className="relative z-10 flex items-center justify-between text-xs gap-1">
-              <span className="flex items-center gap-1.5 sm:gap-3 font-bold text-slate-800 font-heading min-w-0">
-                <Clay3DIcon name="flash" size="sm" withPedestal className="hidden xs:inline-flex shrink-0" />
-                <div className="min-w-0">
-                  <span className="block text-slate-900 font-extrabold text-[11px] sm:text-sm leading-tight truncate sm:whitespace-normal">Fluency & Flow</span>
-                  <span className="hidden sm:block text-[10px] text-slate-500 font-normal">Silence & pause ratio</span>
+            <div className="relative z-10 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-pink-50 border border-pink-200 shadow-clay-card flex items-center justify-center shrink-0 text-rose-600">
+                  <Zap className="w-5 h-5 fill-current stroke-[2.5]" />
+                </div>
+                <div>
+                  <span className="block text-slate-900 font-extrabold text-sm">Fluency & Flow</span>
+                  <span className="text-[10px] text-slate-500 font-normal">Silence & pause ratio</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-[11px] sm:text-sm bg-rose-100/80 text-rose-800 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-rose-200/90 shadow-clay-pill shrink-0">
+              <span className="font-black text-slate-900 text-sm bg-rose-100/80 text-rose-800 px-2.5 py-1 rounded-xl border border-rose-200/90 shadow-clay-pill">
                 {breakdown.fluency}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2 sm:h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.fluency}%` }}
@@ -201,28 +388,30 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-white/40 rounded-full" />
               </div>
             </div>
-            <div className="relative z-10 flex flex-col sm:flex-row justify-between text-[10px] sm:text-[11px] font-semibold text-slate-600 gap-0.5">
-              <span className="truncate">Pause: {Math.round(participantSummary.pauseRatio * 100)}%</span>
-              <span className="text-rose-700 font-bold truncate">Target: &lt;10%</span>
+            <div className="relative z-10 flex justify-between text-[11px] font-semibold text-slate-600">
+              <span>Silence: {Math.round(participantSummary.pauseRatio * 100)}%</span>
+              <span className="text-rose-700 font-bold">Target: &lt;10%</span>
             </div>
           </div>
 
           {/* Card 3: Articulation (Soft Emerald Glow) */}
-          <div className="card-clay card-clay-emerald p-3 sm:p-5 flex flex-col justify-between space-y-2 sm:space-y-3 relative overflow-hidden">
+          <div className="card-clay card-clay-emerald p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
             <WaterWaveDecoration color="rgba(16, 185, 129, 0.09)" height="h-16" />
-            <div className="relative z-10 flex items-center justify-between text-xs gap-1">
-              <span className="flex items-center gap-1.5 sm:gap-3 font-bold text-slate-800 font-heading min-w-0">
-                <Clay3DIcon name="mic" size="sm" withPedestal className="hidden xs:inline-flex shrink-0" />
-                <div className="min-w-0">
-                  <span className="block text-slate-900 font-extrabold text-[11px] sm:text-sm leading-tight truncate sm:whitespace-normal">Articulation</span>
-                  <span className="hidden sm:block text-[10px] text-slate-500 font-normal">Spectral clarity & formants</span>
+            <div className="relative z-10 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-emerald-50 border border-emerald-200 shadow-clay-card flex items-center justify-center shrink-0 text-emerald-600">
+                  <Mic className="w-5 h-5 stroke-[2.5]" />
+                </div>
+                <div>
+                  <span className="block text-slate-900 font-extrabold text-sm">Articulation</span>
+                  <span className="text-[10px] text-slate-500 font-normal">Spectral clarity & formants</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-[11px] sm:text-sm bg-emerald-100/80 text-emerald-800 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-emerald-200/90 shadow-clay-pill shrink-0">
+              <span className="font-black text-slate-900 text-sm bg-emerald-100/80 text-emerald-800 px-2.5 py-1 rounded-xl border border-emerald-200/90 shadow-clay-pill">
                 {breakdown.articulation}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2 sm:h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.articulation}%` }}
@@ -230,28 +419,30 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-white/40 rounded-full" />
               </div>
             </div>
-            <div className="relative z-10 flex flex-col sm:flex-row justify-between text-[10px] sm:text-[11px] font-semibold text-slate-600 gap-0.5">
-              <span className="truncate">Formants: Crisp</span>
-              <span className="text-emerald-700 font-bold truncate">High Clarity</span>
+            <div className="relative z-10 flex justify-between text-[11px] font-semibold text-slate-600">
+              <span>Formants: Crisp</span>
+              <span className="text-emerald-700 font-bold">High Clarity</span>
             </div>
           </div>
 
-          {/* Card 4: Dynamic Pitch / Expression (Soft Amber Glow) */}
-          <div className="card-clay card-clay-amber p-3 sm:p-5 flex flex-col justify-between space-y-2 sm:space-y-3 relative overflow-hidden">
+          {/* Card 4: Dynamic Expression (Soft Amber Glow) */}
+          <div className="card-clay card-clay-amber p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
             <WaterWaveDecoration color="rgba(245, 158, 11, 0.09)" height="h-16" />
-            <div className="relative z-10 flex items-center justify-between text-xs gap-1">
-              <span className="flex items-center gap-1.5 sm:gap-3 font-bold text-slate-800 font-heading min-w-0">
-                <Clay3DIcon name="chart" size="sm" withPedestal className="hidden xs:inline-flex shrink-0" />
-                <div className="min-w-0">
-                  <span className="block text-slate-900 font-extrabold text-[11px] sm:text-sm leading-tight truncate sm:whitespace-normal">Dynamic Pitch</span>
-                  <span className="hidden sm:block text-[10px] text-slate-500 font-normal">F0 vocal modulation</span>
+            <div className="relative z-10 flex items-center justify-between text-xs">
+              <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-amber-50 border border-amber-200 shadow-clay-card flex items-center justify-center shrink-0 text-amber-600">
+                  <Activity className="w-5 h-5 stroke-[2.5]" />
+                </div>
+                <div>
+                  <span className="block text-slate-900 font-extrabold text-sm">Dynamic Pitch</span>
+                  <span className="text-[10px] text-slate-500 font-normal">F0 vocal modulation</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-[11px] sm:text-sm bg-amber-100/80 text-amber-800 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl border border-amber-200/90 shadow-clay-pill shrink-0">
+              <span className="font-black text-slate-900 text-sm bg-amber-100/80 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200/90 shadow-clay-pill">
                 {breakdown.pitchDynamics}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2 sm:h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.pitchDynamics}%` }}
@@ -259,9 +450,9 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-white/40 rounded-full" />
               </div>
             </div>
-            <div className="relative z-10 flex flex-col sm:flex-row justify-between text-[10px] sm:text-[11px] font-semibold text-slate-600 gap-0.5">
-              <span className="truncate">F0: {participantSummary.pitchRangeHz}Hz</span>
-              <span className="text-amber-700 font-bold truncate">Modulation: Active</span>
+            <div className="relative z-10 flex justify-between text-[11px] font-semibold text-slate-600">
+              <span>F0: {participantSummary.pitchRangeHz}Hz</span>
+              <span className="text-amber-700 font-bold">Modulation: Active</span>
             </div>
           </div>
 
