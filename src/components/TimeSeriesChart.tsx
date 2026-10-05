@@ -120,7 +120,7 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
       const nearest = timeSeries.reduce((prev, curr) => 
         Math.abs(curr.timestamp - targetTime) < Math.abs(prev.timestamp - targetTime) ? curr : prev
       );
-      setHoveredPoint(nearest);
+      setHoveredPoint(prev => (prev?.timestamp === nearest.timestamp ? prev : nearest));
     }
   };
 
