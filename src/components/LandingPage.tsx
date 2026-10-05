@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Clay3DIcon, type Clay3DIconName } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
+import { AnimatedReveal } from './AnimatedReveal';
 import { SAMPLE_SPEECHES } from '../services/sampleData';
 import type { SampleSpeech } from '../types/speech';
 
@@ -13,153 +13,181 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({
   onGetStarted,
   onSelectBenchmark,
-  onOpenJsonModal
+  onOpenJsonModal,
 }) => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [isPlayingDemo, setIsPlayingDemo] = useState<boolean>(false);
+  const [demoTime, setDemoTime] = useState<number>(4.2);
+  const [activeLang, setActiveLang] = useState<'en' | 'hi'>('en');
+
+  // Static calm waveform heights representing natural speech dynamics
+  const waveformHeights = [
+    24, 38, 55, 78, 88, 95, 92, 86, 74, 60, 48, 35, 52, 70, 84, 90, 82, 68,
+    45, 30, 20, 12, 10, 14, 45, 68, 82, 88, 76, 62, 50, 40, 58, 74, 85, 80,
+    65, 52, 40, 55, 72, 68, 54, 42, 32, 22, 16, 12
+  ];
 
   const stats = [
-    { value: '< 120ms', label: 'DSP Processing Time', desc: 'Real-time in-browser acoustic extraction', icon: 'zap' as Clay3DIconName },
-    { value: '100%', label: 'Client-Side Privacy', desc: 'Zero audio ever uploaded to any cloud server', icon: 'tick' as Clay3DIconName },
-    { value: '12+', label: 'Acoustic Diagnostics', desc: 'Pitch variance, pause duration, WPM, and clarity', icon: 'chart' as Clay3DIconName },
-    { value: 'Bilingual', label: 'Hindi & English Support', desc: 'Neural auto-translation & aligned grounding', icon: 'globe' as Clay3DIconName },
+    {
+      value: '< 120ms',
+      label: 'DSP Latency',
+      desc: 'In-browser acoustic extraction',
+      icon: 'zap' as Clay3DIconName,
+    },
+    {
+      value: '100%',
+      label: 'Client Privacy',
+      desc: 'Zero audio sent to external servers',
+      icon: 'tick' as Clay3DIconName,
+    },
+    {
+      value: '12+',
+      label: 'Acoustic Metrics',
+      desc: 'Cadence, F0 pitch, pauses & clarity',
+      icon: 'chart' as Clay3DIconName,
+    },
+    {
+      value: 'Bilingual',
+      label: 'Hindi & English',
+      desc: 'Synchronized alignment & translation',
+      icon: 'globe' as Clay3DIconName,
+    },
   ];
 
   const steps = [
     {
       num: '01',
-      title: 'Record Live or Upload',
-      desc: 'Use our zero-latency in-browser studio with real-time waveform visualizer, or upload any MP3, WAV, or M4A speech file.',
+      title: 'Record or Upload',
+      desc: 'Speak directly into your browser or drop any MP3, WAV, or M4A audio file. Instant decoding with zero latency.',
       icon: 'mic' as Clay3DIconName,
-      badgeColor: 'bg-violet-100 text-violet-800 border-violet-200'
+      badge: 'Capture',
     },
     {
       num: '02',
-      title: 'Contrastive DSP Diagnostics',
-      desc: 'Acoustic metrics are extracted directly via Web Audio API and benchmarked against champion baselines to locate millisecond flaws.',
+      title: 'Contrastive DSP Benchmark',
+      desc: 'Speech features are extracted via Web Audio API and mathematically compared against champion orator baselines.',
       icon: 'target' as Clay3DIconName,
-      badgeColor: 'bg-pink-100 text-pink-800 border-pink-200'
+      badge: 'Analysis',
     },
     {
       num: '03',
-      title: 'AI Coach Drills & Practice',
-      desc: 'Get exact timestamps, causal explanations, customized vocal exercises, and interactive synchronized transcript grounding.',
+      title: 'Actionable Diagnostic Drills',
+      desc: 'Pinpoint exact millisecond flaw boundaries with tailored vocal exercises and synchronized bilingual transcripts.',
       icon: 'bulb' as Clay3DIconName,
-      badgeColor: 'bg-amber-100 text-amber-800 border-amber-200'
-    }
+      badge: 'Mastery',
+    },
   ];
 
   const features = [
     {
       title: 'Temporal Flaw Grounding',
-      desc: 'Pinpoint exact millisecond boundaries where unnatural pauses occur, cadence rushes exceed 180 WPM, or consonants blur into mumbling.',
+      desc: 'Identifies exact start and end timestamps where speaking pace accelerates excessively or unnatural pauses interrupt delivery.',
       icon: 'target' as Clay3DIconName,
       tag: 'Millisecond Precision',
-      bgGlow: 'from-pink-500/10 to-transparent'
     },
     {
-      title: 'Participant vs Baseline Dynamics',
-      desc: 'Compare your speech pitch contours (F0 in Hz) and dynamic intensity decibels against ideal champion orators in an interactive time-series overlay.',
+      title: 'Speaker vs Baseline Overlay',
+      desc: 'Interactive time-series comparison of your fundamental pitch (F0 in Hz) and dynamic loudness against competition benchmarks.',
       icon: 'chart' as Clay3DIconName,
-      tag: 'Contrastive AI',
-      bgGlow: 'from-violet-500/10 to-transparent'
+      tag: 'Contrastive DSP',
     },
     {
-      title: 'Bilingual Synchronized Transcript',
-      desc: 'Read speech synced word-by-word with live playback. Includes automatic English-Hindi neural translation and Web Speech voice dictation.',
-      icon: 'speech' as Clay3DIconName,
-      tag: 'Hindi + English',
-      bgGlow: 'from-emerald-500/10 to-transparent'
+      title: '100% In-Browser Privacy',
+      desc: 'All linear PCM decoding and acoustic feature computations run locally on your client machine. Zero audio is stored or transmitted.',
+      icon: 'tick' as Clay3DIconName,
+      tag: 'Zero Cloud Storage',
     },
     {
-      title: 'Interactive Waveform Studio',
-      desc: 'Visual audio canvas with color-coded flaw brackets. Click any flaw region to immediately seek, loop, and hear your speech flaws in context.',
+      title: 'Tactile Waveform Canvas',
+      desc: 'Click on any highlighted flaw zone to instantly jump, listen to the exact speech segment, and understand context.',
       icon: 'music' as Clay3DIconName,
-      tag: 'Tactile Scrubbing',
-      bgGlow: 'from-blue-500/10 to-transparent'
+      tag: 'Interactive Scrubbing',
     },
     {
-      title: 'Contextual AI Speech Coach',
-      desc: 'Ask questions like "How do I fix my pacing?" and receive tailored vocal drills, breathing techniques, and diagnostic breakdowns.',
+      title: 'AI Speech Coach Drills',
+      desc: 'Receive personalized drills such as metronome pacing calibrations, pause management, and diaphragmatic breathing routines.',
       icon: 'robot' as Clay3DIconName,
-      tag: 'Diagnostic Drills',
-      bgGlow: 'from-purple-500/10 to-transparent'
+      tag: 'Targeted Exercises',
     },
     {
       title: 'PRD JSON Data Contract',
-      desc: 'Export machine-readable telemetry conforming to strict Hackathon PRD requirements. Includes full timestamps, metrics, and scoring breakdowns.',
+      desc: 'Full compatibility with strict competition standards. Export all metrics, timestamps, and causal explanations with one click.',
       icon: 'document' as Clay3DIconName,
       tag: 'Developer Ready',
-      bgGlow: 'from-amber-500/10 to-transparent'
-    }
+    },
   ];
 
   const faqs = [
     {
-      q: 'Does VoxPulse upload my audio to external servers?',
-      a: 'No! VoxPulse processes 100% of your audio locally inside your browser using the HTML5 Web Audio API and linear PCM decoders. Your voice never leaves your device.'
+      q: 'Does VoxPulse upload audio to external cloud servers?',
+      a: 'No. VoxPulse runs 100% locally inside your browser using the HTML5 Web Audio API. Your audio never leaves your device.',
     },
     {
       q: 'How does Contrastive Diagnostics work?',
-      a: 'VoxPulse extracts quantitative acoustic features (Fundamental frequency F0, word cadence, silence durations, energy variance) and mathematically contrasts them against ideal baseline baseline distributions for competition categories like Extempore and Persuasive Oratory.'
+      a: 'VoxPulse extracts quantitative acoustic features (Fundamental frequency F0, cadence in WPM, silence duration, and intensity) and mathematically benchmarks them against champion orator distributions for competition categories like Extempore and Persuasive Oratory.',
     },
     {
       q: 'What audio formats are supported?',
-      a: 'VoxPulse supports direct live browser microphone recording as well as uploads of MP3, WAV, M4A, OGG, and AAC files.'
+      a: 'VoxPulse supports direct live browser microphone recording as well as uploads of MP3, WAV, M4A, OGG, and AAC files.',
     },
     {
-      q: 'Can I use Hindi or bilingual English-Hindi speeches?',
-      a: 'Yes! VoxPulse features an integrated bilingual translation engine that accurately aligns Hindi and English words to the playback timeline.'
-    }
+      q: 'Can I analyze Hindi or bilingual English-Hindi speeches?',
+      a: 'Yes. VoxPulse includes an integrated bilingual engine that synchronizes and translates words along the audio playback timeline.',
+    },
   ];
 
   return (
-    <div className="w-full space-y-16 sm:space-y-24 pb-12 animate-pop-in">
+    <div className="w-full space-y-16 sm:space-y-24 pb-20 overflow-x-hidden">
       
       {/* ===================== HERO SECTION ===================== */}
-      <section className="relative text-center pt-4 sm:pt-10 pb-6 sm:pb-12 max-w-5xl mx-auto px-4">
+      <section className="relative text-center pt-4 sm:pt-10 pb-4 max-w-4xl mx-auto px-4">
         
-        {/* Floating Ambient Badges */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 backdrop-blur-md border border-violet-200/90 shadow-clay-pill text-violet-800 text-xs sm:text-sm font-bold tracking-wide animate-float-slow mb-6">
-          <Clay3DIcon name="sparkles" size="xs" />
-          <span>Next-Gen Contrastive Speech Diagnostics & AI Coaching</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        {/* Subtle Ambient Header Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-36 bg-gradient-to-r from-violet-200/40 via-indigo-200/40 to-slate-200/40 blur-3xl -z-10 rounded-full pointer-events-none"></div>
+
+        {/* Clean Classic Pill */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-xs text-slate-700 text-xs sm:text-sm font-semibold mb-6">
+          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>AI Contrastive Speech Analytics</span>
+          <span className="text-slate-300">|</span>
+          <span className="text-violet-600 font-bold">100% In-Browser DSP</span>
         </div>
 
         {/* Main Display Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-900 tracking-tight font-heading leading-[1.1] mb-6">
-          Speak with Confidence. <br className="hidden sm:inline" />
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight font-heading leading-[1.15] mb-5">
+          Speak with Authority. <br className="hidden sm:inline" />
           Master Every{' '}
-          <span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
             Vocal Cadence.
           </span>
         </h1>
 
-        {/* Subtitle */}
-        <p className="max-w-3xl mx-auto text-base sm:text-xl text-slate-600 font-normal leading-relaxed mb-8">
-          The contrastive speech analytics platform that pinpoints exact millisecond flaw boundaries, acoustic discrepancies against champion baselines, and actionable vocal drills — powered by <strong className="text-slate-800 font-bold">100% client-side DSP</strong>.
+        {/* Concise Subtitle */}
+        <p className="max-w-2xl mx-auto text-sm sm:text-lg text-slate-600 font-normal leading-relaxed mb-8">
+          Pinpoint exact millisecond flaw boundaries, acoustic discrepancies against champion baselines, and actionable vocal drills — with zero server latency.
         </p>
 
         {/* Primary Call to Actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 max-w-md sm:max-w-none mx-auto mb-10">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto mb-8">
           <button
             onClick={() => onGetStarted('record')}
-            className="w-full sm:w-auto btn-clay-primary px-7 py-4 text-sm sm:text-base font-bold flex items-center justify-center gap-2.5 shadow-clay-btn-primary hover:scale-105 active:scale-95 transition-all text-white"
+            className="px-6 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all active:scale-[0.98] cursor-pointer"
           >
-            <Clay3DIcon name="mic" size="sm" floating />
+            <Clay3DIcon name="mic" size="xs" />
             <span>Record Speech Live</span>
           </button>
 
           <button
             onClick={() => onGetStarted('upload')}
-            className="w-full sm:w-auto btn-clay-secondary px-7 py-4 text-sm sm:text-base font-bold flex items-center justify-center gap-2.5 hover:scale-105 active:scale-95 transition-all text-slate-800"
+            className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm sm:text-base border border-slate-200 shadow-xs hover:border-slate-300 transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
           >
-            <Clay3DIcon name="cloud" size="sm" />
+            <Clay3DIcon name="cloud" size="xs" />
             <span>Upload Audio File</span>
           </button>
 
           <button
             onClick={() => onGetStarted('presets')}
-            className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-violet-50 hover:bg-violet-100 border border-violet-200 text-violet-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xs"
+            className="px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
           >
             <Clay3DIcon name="trophy" size="xs" />
             <span>Demo Benchmarks</span>
@@ -169,211 +197,268 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         {/* Trust Badges */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-slate-500 font-medium">
           <div className="flex items-center gap-1.5">
-            <Clay3DIcon name="tick" size="xs" />
-            <span>100% Private (Runs in Browser)</span>
+            <span className="text-emerald-500 font-bold">✓</span>
+            <span>Client-Side Privacy (0 Cloud Uploads)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Clay3DIcon name="zap" size="xs" />
-            <span>Zero Sign-Up Required</span>
+            <span className="text-emerald-500 font-bold">✓</span>
+            <span>&lt; 120ms Latency</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Clay3DIcon name="document" size="xs" />
-            <button 
+            <span className="text-emerald-500 font-bold">✓</span>
+            <button
               onClick={onOpenJsonModal}
-              className="text-violet-600 hover:text-violet-800 underline font-semibold"
+              className="text-violet-600 hover:text-violet-800 underline font-semibold cursor-pointer"
             >
-              PRD JSON Ready
+              PRD JSON Telemetry Ready
             </button>
           </div>
         </div>
 
-        {/* ===================== HERO INTERACTIVE PREVIEW CARD ===================== */}
-        <div className="mt-12 sm:mt-16 relative">
+        {/* ===================== CLASSIC STUDIO AUDIO INSPECTOR CARD ===================== */}
+        <div className="mt-10 sm:mt-14 relative text-left">
           
-          {/* Subtle Glow Behind Preview */}
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 via-pink-500/15 to-purple-500/20 blur-3xl -z-10 rounded-full scale-95 pointer-events-none"></div>
-
-          {/* 3D Clay Dashboard Mockup Container */}
-          <div 
-            onClick={() => onGetStarted('record')}
-            className="card-clay card-clay-violet p-4 sm:p-7 rounded-3xl sm:rounded-4xl shadow-clay-card hover:shadow-clay-card-hover transition-all duration-500 cursor-pointer group text-left relative overflow-hidden"
-            title="Click to launch VoxPulse Studio"
-          >
-            <WaterWaveDecoration color="rgba(139, 92, 246, 0.09)" height="h-28" />
-
-            {/* Top Bar of Mockup */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5 relative z-10">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 text-white flex items-center justify-center p-1 shadow-sm">
-                  <img src="/app-icon.png" alt="App" className="w-full h-full object-contain rounded-xl" />
-                </div>
-                <div>
-                  <h3 className="font-heading font-black text-slate-900 text-base sm:text-lg flex items-center gap-2">
-                    <span>Live Diagnostic Session</span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200">
-                      LIVE DSP ACTIVE
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-500 font-medium">Persuasive Oratory Baseline vs Speaker Delivery</p>
-                </div>
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-md overflow-hidden transition-all">
+            
+            {/* macOS / Classic Window Top Bar */}
+            <div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-slate-300 inline-block"></span>
+                <span className="w-3 h-3 rounded-full bg-slate-300 inline-block"></span>
+                <span className="w-3 h-3 rounded-full bg-slate-300 inline-block"></span>
+                <span className="ml-2 text-xs font-semibold text-slate-600 hidden sm:inline-block">
+                  VoxPulse Diagnostic Studio · Sample Preview
+                </span>
               </div>
 
-              <div className="hidden sm:flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-clay-pill flex items-center gap-1.5">
-                  <Clay3DIcon name="trophy" size="xs" />
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold">
+                  Persuasive Baseline
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-[11px] font-bold">
                   Score: 88/100
                 </span>
-                <span className="px-3 py-1 rounded-full bg-violet-600 text-white text-xs font-bold shadow-sugary-violet flex items-center gap-1">
-                  Launch Studio →
-                </span>
               </div>
             </div>
 
-            {/* Mock Waveform with Grounded Flaw Brackets */}
-            <div className="clay-inset-well p-4 sm:p-5 rounded-2xl mb-5 space-y-3 relative">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+            {/* Audio Waveform & Flaw Zone Canvas */}
+            <div className="p-4 sm:p-7 space-y-5">
+              
+              {/* Audio Waveform Display */}
+              <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+                
+                {/* Time & Title info */}
+                <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setIsPlayingDemo(!isPlayingDemo)}
+                      className="w-6 h-6 rounded-md bg-violet-600 text-white flex items-center justify-center text-[10px] font-bold shadow-xs hover:bg-violet-700 transition-colors cursor-pointer"
+                    >
+                      {isPlayingDemo ? '❚❚' : '▶'}
+                    </button>
+                    <span className="font-semibold text-slate-800">
+                      National Oratory Finalist Recording
+                    </span>
+                  </div>
+                  <span className="font-mono text-violet-700 font-bold">
+                    00:0{demoTime.toFixed(1)} / 00:16.0
+                  </span>
+                </div>
+
+                {/* Clean, calm static waveform with subtle flaw highlighting */}
+                <div className="h-16 sm:h-20 flex items-end justify-between gap-[2px] sm:gap-1 px-1 relative select-none">
+                  
+                  {/* Flaw Bracket 1: Fast Speech */}
+                  <div
+                    className="absolute inset-y-0 rounded-lg bg-rose-50 border border-rose-300/80 pointer-events-none transition-all"
+                    style={{ left: '16%', width: '25%' }}
+                  >
+                    <span className="absolute -top-2 left-2 text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-600 text-white uppercase tracking-wider">
+                      Fast Cadence (192 WPM)
+                    </span>
+                  </div>
+
+                  {/* Flaw Bracket 2: Dead-Air Pause */}
+                  <div
+                    className="absolute inset-y-0 rounded-lg bg-amber-50 border border-amber-300/80 pointer-events-none transition-all"
+                    style={{ left: '48%', width: '18%' }}
+                  >
+                    <span className="absolute -top-2 left-2 text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-600 text-white uppercase tracking-wider">
+                      1.2s Pause
+                    </span>
+                  </div>
+
+                  {/* Audio Bars */}
+                  {waveformHeights.map((h, i) => {
+                    const isInsideFast = i >= 8 && i <= 19;
+                    const isInsidePause = i >= 23 && i <= 31;
+                    const isPlayed = i < 14;
+
+                    return (
+                      <div
+                        key={i}
+                        style={{ height: `${h}%` }}
+                        className={`w-full rounded-sm transition-all ${
+                          isInsideFast
+                            ? 'bg-rose-500'
+                            : isInsidePause
+                            ? 'bg-amber-400'
+                            : isPlayed
+                            ? 'bg-violet-600'
+                            : 'bg-slate-300'
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Scrubber timeline track */}
+                <div className="relative pt-1">
+                  <input
+                    type="range"
+                    min="0"
+                    max="16"
+                    step="0.1"
+                    value={demoTime}
+                    onChange={(e) => setDemoTime(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600"
+                  />
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                    <span>0:00</span>
+                    <span>0:04</span>
+                    <span>0:08</span>
+                    <span>0:12</span>
+                    <span>0:16</span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* 4 Clean Minimalist Metric Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center justify-between text-slate-500 text-[11px] mb-1">
+                    <span>Fluency</span>
+                    <span className="font-bold text-slate-700">84/100</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-violet-600 h-full rounded-full" style={{ width: '84%' }}></div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center justify-between text-slate-500 text-[11px] mb-1">
+                    <span>Cadence</span>
+                    <span className="font-bold text-rose-600">142 WPM</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-rose-500 h-full rounded-full" style={{ width: '75%' }}></div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center justify-between text-slate-500 text-[11px] mb-1">
+                    <span>Modulation</span>
+                    <span className="font-bold text-indigo-600">79/100</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-indigo-600 h-full rounded-full" style={{ width: '79%' }}></div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+                  <div className="flex items-center justify-between text-slate-500 text-[11px] mb-1">
+                    <span>Clarity</span>
+                    <span className="font-bold text-emerald-600">92/100</span>
+                  </div>
+                  <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-emerald-600 h-full rounded-full" style={{ width: '92%' }}></div>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Bottom Quick Trigger Bar */}
+              <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-500">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                  Interactive Audio Waveform Scrubbing
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Ready to test with your own voice? Studio starts in 5 seconds.
                 </span>
-                <span className="font-mono text-violet-700">00:04.2 / 00:16.0</span>
+
+                <button
+                  onClick={() => onGetStarted('record')}
+                  className="font-bold text-violet-700 hover:text-violet-900 flex items-center gap-1 transition-colors cursor-pointer"
+                >
+                  <span>Launch Live Speech Studio</span>
+                  <span>→</span>
+                </button>
               </div>
 
-              {/* Simulated Waveform Bars */}
-              <div className="h-16 sm:h-20 flex items-center justify-between gap-1 px-2 relative">
-                {Array.from({ length: 48 }).map((_, i) => {
-                  const heights = [30, 45, 75, 90, 60, 40, 85, 95, 35, 20, 15, 80, 95, 70, 50, 40, 65, 80, 90, 75, 40, 20, 10, 10, 85, 90, 60, 40, 30, 70, 85, 95, 60, 40, 30, 80, 90, 75, 60, 45, 80, 70, 50, 30, 40, 60, 50, 25];
-                  const h = heights[i % heights.length];
-                  const isFastFlaw = i >= 8 && i <= 15;
-                  const isPauseFlaw = i >= 20 && i <= 24;
-                  return (
-                    <div
-                      key={i}
-                      style={{ height: `${h}%` }}
-                      className={`w-full rounded-full transition-all duration-300 ${
-                        isFastFlaw
-                          ? 'bg-pink-500'
-                          : isPauseFlaw
-                          ? 'bg-amber-400'
-                          : i < 18
-                          ? 'bg-violet-600'
-                          : 'bg-slate-300'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Flaw Bracket Tags */}
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                <span className="px-2.5 py-1 rounded-full bg-pink-100 border border-pink-300 text-pink-900 font-bold text-[11px] flex items-center gap-1">
-                  <Clay3DIcon name="rocket" size="xs" />
-                  <span>00:03–00:06 Fast Speech (192 WPM)</span>
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 font-bold text-[11px] flex items-center gap-1">
-                  <Clay3DIcon name="clock" size="xs" />
-                  <span>00:09–00:10 Unnatural Pause (1.2s dead air)</span>
-                </span>
-              </div>
             </div>
 
-            {/* Bottom Mini Metrics Row inside Mockup */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-white border border-slate-100 shadow-xs">
-                <p className="text-slate-400 font-medium">Fluency</p>
-                <p className="text-base font-extrabold text-slate-800">84/100</p>
-              </div>
-              <div className="p-3 rounded-xl bg-white border border-slate-100 shadow-xs">
-                <p className="text-slate-400 font-medium">Pacing Pace</p>
-                <p className="text-base font-extrabold text-pink-600">142 WPM</p>
-              </div>
-              <div className="p-3 rounded-xl bg-white border border-slate-100 shadow-xs">
-                <p className="text-slate-400 font-medium">Pitch Modulation</p>
-                <p className="text-base font-extrabold text-violet-600">79/100</p>
-              </div>
-              <div className="p-3 rounded-xl bg-white border border-slate-100 shadow-xs">
-                <p className="text-slate-400 font-medium">Clarity Score</p>
-                <p className="text-base font-extrabold text-emerald-600">92/100</p>
-              </div>
-            </div>
-
-            {/* Hover overlay hint */}
-            <div className="absolute inset-0 bg-violet-900/5 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="btn-clay-primary px-6 py-3 text-sm font-bold text-white shadow-clay-btn-primary scale-105 transition-transform flex items-center gap-2">
-                <Clay3DIcon name="mic" size="xs" />
-                Launch Live Speech Studio Now
-              </span>
-            </div>
           </div>
+
         </div>
 
       </section>
 
-      {/* ===================== STATS / TRUST METRICS STRIP ===================== */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {stats.map((s, idx) => {
-            const statThemes = ['card-clay-violet', 'card-clay-pink', 'card-clay-emerald', 'card-clay-amber'];
-            const statColors = ['rgba(139, 92, 246, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(16, 185, 129, 0.08)', 'rgba(245, 158, 11, 0.08)'];
-            return (
-              <div 
-                key={idx} 
-                className={`card-clay ${statThemes[idx % statThemes.length]} p-5 sm:p-6 rounded-3xl relative overflow-hidden shadow-clay-card flex flex-col justify-between space-y-2 hover:scale-[1.02] transition-transform`}
-              >
-                <WaterWaveDecoration color={statColors[idx % statColors.length]} height="h-12" opacity="opacity-70" />
-                <div className="relative z-10 flex items-center justify-between">
-                  <span className="text-2xl sm:text-4xl font-black font-heading tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+      {/* ===================== STATS STRIP ===================== */}
+      <section className="max-w-5xl mx-auto px-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {stats.map((s, idx) => (
+            <AnimatedReveal key={idx} delayClass={`stagger-${(idx % 4) + 1}` as any}>
+              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-2xl sm:text-3xl font-black font-heading text-slate-900">
                     {s.value}
                   </span>
-                  <div className="w-8 h-8 rounded-xl bg-white/90 border border-slate-200/80 flex items-center justify-center shadow-xs">
+                  <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center">
                     <Clay3DIcon name={s.icon} size="xs" />
                   </div>
                 </div>
-                <div className="relative z-10">
-                  <p className="font-bold text-slate-800 text-sm">{s.label}</p>
-                  <p className="text-xs text-slate-600 font-normal leading-relaxed">{s.desc}</p>
-                </div>
+                <p className="font-bold text-slate-800 text-xs sm:text-sm">{s.label}</p>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-normal leading-relaxed mt-0.5">
+                  {s.desc}
+                </p>
               </div>
-            );
-          })}
+            </AnimatedReveal>
+          ))}
         </div>
       </section>
 
       {/* ===================== HOW IT WORKS (3 STEPS) ===================== */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="text-center space-y-3 mb-12">
-          <span className="px-3.5 py-1 rounded-full bg-violet-100 text-violet-800 text-xs font-bold border border-violet-200 shadow-xs uppercase tracking-wider">
-            Diagnostic Workflow
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-heading">
-            How VoxPulse Perfects Your Delivery
-          </h2>
-          <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
-            Three simple steps from speaking into your microphone to receiving actionable, millisecond-accurate acoustic diagnostics.
-          </p>
-        </div>
+      <section className="max-w-5xl mx-auto px-4">
+        <AnimatedReveal>
+          <div className="text-center space-y-2 mb-8 sm:mb-10">
+            <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+              Workflow
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading">
+              How VoxPulse Diagnoses Delivery
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Three clear stages from acoustic signal extraction to millisecond flaw grounding.
+            </p>
+          </div>
+        </AnimatedReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-          {steps.map((st, i) => {
-            const stepThemes = ['card-clay-violet', 'card-clay-pink', 'card-clay-emerald'];
-            const stepColors = ['rgba(139, 92, 246, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(16, 185, 129, 0.08)'];
-            return (
-              <div 
-                key={i}
-                className={`card-clay ${stepThemes[i % stepThemes.length]} p-6 sm:p-7 rounded-3xl relative overflow-hidden shadow-clay-card flex flex-col justify-between space-y-5 group hover:-translate-y-1 transition-all`}
-              >
-                <WaterWaveDecoration color={stepColors[i % stepColors.length]} height="h-16" />
-                <div className="relative z-10 flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-white/90 border border-slate-100 shadow-clay-pill flex items-center justify-center p-2">
-                    <Clay3DIcon name={st.icon} size="sm" floating />
-                  </div>
-                  <span className="text-3xl font-black font-heading text-slate-300 group-hover:text-violet-300 transition-colors">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+          {steps.map((st, i) => (
+            <AnimatedReveal key={i} delayClass={`stagger-${i + 1}` as any} className="h-full">
+              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-4 h-full">
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                    {st.badge}
+                  </span>
+                  <span className="text-2xl font-black font-heading text-slate-300">
                     {st.num}
                   </span>
                 </div>
 
-                <div className="relative z-10 space-y-2">
-                  <h3 className="font-heading font-black text-slate-900 text-lg sm:text-xl">
+                <div className="space-y-1.5">
+                  <h3 className="font-heading font-black text-slate-900 text-base sm:text-lg">
                     {st.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
@@ -381,130 +466,220 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   </p>
                 </div>
 
-                <div className="relative z-10 pt-2">
+                <div className="pt-2 border-t border-slate-100">
                   <button
                     onClick={() => onGetStarted(i === 0 ? 'record' : 'presets')}
-                    className="text-xs font-bold text-violet-700 group-hover:text-violet-900 flex items-center gap-1 transition-colors"
+                    className="text-xs font-semibold text-violet-700 hover:text-violet-900 flex items-center gap-1 transition-colors cursor-pointer"
                   >
-                    <span>Explore step</span>
+                    <span>Test this stage</span>
                     <span>→</span>
                   </button>
                 </div>
+
               </div>
-            );
-          })}
+            </AnimatedReveal>
+          ))}
         </div>
       </section>
 
-      {/* ===================== DEEP DIVE BENTO GRID ===================== */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="text-center space-y-3 mb-12">
-          <span className="px-3.5 py-1 rounded-full bg-pink-100 text-pink-800 text-xs font-bold border border-pink-200 shadow-xs uppercase tracking-wider">
-            Deep-Tech Capabilities
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-heading">
-            Built for Serious Orators & Competitions
-          </h2>
-          <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
-            Traditional speech coaching relies on vague impressions. VoxPulse brings mathematical rigor and millisecond contrastive analytics.
-          </p>
-        </div>
+      {/* ===================== BILINGUAL TRANSCRIPT SECTION ===================== */}
+      <section className="max-w-5xl mx-auto px-4">
+        <AnimatedReveal>
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs p-5 sm:p-8 space-y-5">
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200">
+                  Bilingual Sync
+                </span>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 font-heading mt-1.5">
+                  Synchronized English & Hindi Grounding
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Words align with audio playback timestamps and detected acoustic flaws.
+                </p>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f, i) => {
-            const bentoThemes = ['card-clay-violet', 'card-clay-cyan', 'card-clay-emerald', 'card-clay-pink', 'card-clay-amber', 'card-clay-violet'];
-            const bentoColors = ['rgba(139, 92, 246, 0.08)', 'rgba(6, 182, 212, 0.08)', 'rgba(16, 185, 129, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(245, 158, 11, 0.08)', 'rgba(139, 92, 246, 0.08)'];
-            return (
-              <div 
-                key={i}
-                className={`card-clay ${bentoThemes[i % bentoThemes.length]} p-6 rounded-3xl relative overflow-hidden shadow-clay-card flex flex-col justify-between space-y-4 hover:shadow-clay-card-hover transition-all`}
-              >
-                <WaterWaveDecoration color={bentoColors[i % bentoColors.length]} height="h-14" />
-                <div className="relative z-10 space-y-3">
+              {/* Language Switcher */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+                <button
+                  onClick={() => setActiveLang('en')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    activeLang === 'en'
+                      ? 'bg-white text-slate-900 shadow-xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => setActiveLang('hi')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    activeLang === 'hi'
+                      ? 'bg-white text-slate-900 shadow-xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  हिन्दी
+                </button>
+              </div>
+            </div>
+
+            {/* Transcript Card */}
+            <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+              <div className="flex flex-wrap items-center gap-2 text-sm sm:text-base leading-relaxed text-slate-700">
+                {activeLang === 'en' ? (
+                  <>
+                    <span className="font-bold text-violet-700 bg-violet-100/70 px-1.5 py-0.5 rounded">
+                      Transformative breakthroughs
+                    </span>
+                    <span>do not arise by chance. They require</span>
+                    <span className="bg-rose-100 text-rose-800 border border-rose-200 px-1.5 py-0.5 rounded font-medium">
+                      decisive leadership,
+                    </span>
+                    <span className="bg-rose-100 text-rose-800 border border-rose-200 px-1.5 py-0.5 rounded font-medium">
+                      resilience,
+                    </span>
+                    <span>and</span>
+                    <span className="bg-amber-100 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded font-medium">
+                      unshakeable conviction. [1.2s pause]
+                    </span>
+                    <span>When delivery commands every syllable, our rhetoric inspires action.</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-bold text-violet-700 bg-violet-100/70 px-1.5 py-0.5 rounded">
+                      परिवर्तनकारी उपलब्धियाँ
+                    </span>
+                    <span>संयोग से उत्पन्न नहीं होती हैं। इसके लिए आवश्यक है</span>
+                    <span className="bg-rose-100 text-rose-800 border border-rose-200 px-1.5 py-0.5 rounded font-medium">
+                      निर्णायक नेतृत्व,
+                    </span>
+                    <span className="bg-rose-100 text-rose-800 border border-rose-200 px-1.5 py-0.5 rounded font-medium">
+                      लचीलापन,
+                    </span>
+                    <span>और</span>
+                    <span className="bg-amber-100 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded font-medium">
+                      अटूट दृढ़ विश्वास। [1.2s ठहराव]
+                    </span>
+                    <span>जब प्रस्तुति हर शब्द को नियंत्रित करती है, तो प्रभाव स्थायी होता है।</span>
+                  </>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between font-mono">
+                <span>Playhead: 00:04.2 / 00:16.0</span>
+                <span className="text-violet-700 font-semibold">Bilingual Alignment Active</span>
+              </div>
+            </div>
+
+          </div>
+        </AnimatedReveal>
+      </section>
+
+      {/* ===================== CAPABILITIES GRID (CLASSIC) ===================== */}
+      <section className="max-w-5xl mx-auto px-4">
+        <AnimatedReveal>
+          <div className="text-center space-y-2 mb-8 sm:mb-10">
+            <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+              Core Capabilities
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading">
+              Engineered for Competition Rigor
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+              Mathematical acoustic models deliver clear, objective speech evaluation.
+            </p>
+          </div>
+        </AnimatedReveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {features.map((f, i) => (
+            <AnimatedReveal key={i} delayClass={`stagger-${(i % 3) + 1}` as any} className="h-full">
+              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between space-y-3 h-full">
+                
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-2xl bg-white/90 border border-slate-100 shadow-clay-pill flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-center">
                       <Clay3DIcon name={f.icon} size="xs" />
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-white/80 border border-slate-200/80 text-[11px] font-bold text-slate-700">
+                    <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
                       {f.tag}
                     </span>
                   </div>
 
-                  <h3 className="font-heading font-black text-slate-900 text-base sm:text-lg">
+                  <h3 className="font-heading font-black text-slate-900 text-base">
                     {f.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+
+                  <p className="text-xs text-slate-600 font-normal leading-relaxed">
                     {f.desc}
                   </p>
                 </div>
 
-                <div className="relative z-10 pt-2 border-t border-slate-200/50">
+                <div className="pt-2 border-t border-slate-100">
                   <button
                     onClick={() => onGetStarted('record')}
-                    className="text-xs font-bold text-slate-700 hover:text-violet-700 flex items-center gap-1 transition-colors"
+                    className="text-xs font-semibold text-slate-700 hover:text-violet-700 flex items-center gap-1 transition-colors cursor-pointer"
                   >
-                    <span>Test in studio</span>
+                    <span>Inspect feature</span>
                     <span>→</span>
                   </button>
                 </div>
+
               </div>
-            );
-          })}
+            </AnimatedReveal>
+          ))}
         </div>
       </section>
 
       {/* ===================== BENCHMARK PRESETS SHOWCASE ===================== */}
-      <section className="max-w-6xl mx-auto px-4">
-        <div className="card-clay card-clay-violet p-6 sm:p-10 rounded-3xl sm:rounded-4xl relative overflow-hidden shadow-clay-card space-y-8">
-          <div className="relative z-10 space-y-8">
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200/80 pb-6">
-            <div>
-              <span className="px-3 py-1 rounded-full bg-violet-100 text-violet-800 text-xs font-bold border border-violet-200 shadow-xs uppercase tracking-wider">
-                Pre-Computed Baselines
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading mt-2">
-                Try Curated Competition Baselines
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
-                Don’t have audio ready? Test VoxPulse right now using pre-recorded speeches with pre-grounded temporal flaws.
-              </p>
+      <section className="max-w-5xl mx-auto px-4">
+        <AnimatedReveal>
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xs p-5 sm:p-8 space-y-6">
+            
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-100 pb-4">
+              <div>
+                <span className="px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-800 text-xs font-semibold border border-violet-200">
+                  Pre-Computed Baselines
+                </span>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 font-heading mt-1.5">
+                  Curated Competition Benchmarks
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  No microphone ready? Click any benchmark sample to launch the diagnostic studio instantly.
+                </p>
+              </div>
+
+              <button
+                onClick={() => onGetStarted('presets')}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-semibold self-start sm:self-auto shrink-0 flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>View All Presets</span>
+                <span>→</span>
+              </button>
             </div>
 
-            <button
-              onClick={() => onGetStarted('presets')}
-              className="btn-clay-secondary px-5 py-2.5 text-xs font-bold self-start sm:self-auto shrink-0 flex items-center gap-2"
-            >
-              <span>View All Presets</span>
-              <span>→</span>
-            </button>
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+              {SAMPLE_SPEECHES.map((sample) => {
+                const isChampion = sample.id === 'sample-ideal-baseline';
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {SAMPLE_SPEECHES.map((sample, idx) => {
-              const isChampion = sample.id === 'sample-ideal-baseline';
-              const cardThemes = ['card-clay-violet', 'card-clay-pink', 'card-clay-emerald'];
-              const waveColors = ['rgba(139, 92, 246, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(16, 185, 129, 0.08)'];
-              const appliedTheme = isChampion ? 'card-clay-amber' : cardThemes[idx % cardThemes.length];
-              const appliedWave = isChampion ? 'rgba(245, 158, 11, 0.08)' : waveColors[idx % waveColors.length];
-
-              return (
-                <div
-                  key={sample.id}
-                  onClick={() => onSelectBenchmark(sample)}
-                  className={`p-5 rounded-2xl border card-clay ${appliedTheme} relative overflow-hidden transition-all cursor-pointer flex flex-col justify-between space-y-4 hover:scale-[1.03] group shadow-clay-card`}
-                >
-                  <WaterWaveDecoration color={appliedWave} height="h-12" />
-
-                  <div className="relative z-10 flex flex-col justify-between h-full space-y-4">
-                    <div className="space-y-2">
+                return (
+                  <div
+                    key={sample.id}
+                    onClick={() => onSelectBenchmark(sample)}
+                    className="p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/50 shadow-xs transition-all cursor-pointer flex flex-col justify-between space-y-3 group"
+                  >
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                          isChampion ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-white/80 text-violet-800 border-violet-200'
+                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                          isChampion
+                            ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                            : 'bg-slate-100 text-slate-700'
                         }`}>
                           {sample.category}
                         </span>
-                        <span className="text-xs font-extrabold text-slate-800 bg-white/90 px-2 py-0.5 rounded-full border border-slate-200">
+                        <span className="text-xs font-bold text-slate-800 font-mono">
                           {sample.precomputedResult.overall_score}/100
                         </span>
                       </div>
@@ -513,129 +688,134 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                         {sample.title}
                       </h4>
 
-                      <p className="text-[11px] text-slate-600 line-clamp-2">
+                      <p className="text-[11px] text-slate-500 line-clamp-2">
                         {sample.description}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
-                      <span className="text-slate-500 font-mono text-[10px]">{sample.durationSec}s audio</span>
-                      <span className="font-bold text-violet-700 group-hover:translate-x-0.5 transition-transform">
-                        Analyze →
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                      <span className="text-slate-400 font-mono text-[10px]">
+                        {sample.durationSec}s audio
+                      </span>
+                      <span className="font-bold text-violet-700 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                        <span>Analyze</span>
+                        <span>→</span>
                       </span>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
           </div>
-        </div>
+        </AnimatedReveal>
       </section>
 
-      {/* ===================== FAQ SECTION ===================== */}
-      <section className="max-w-4xl mx-auto px-4">
-        <div className="text-center space-y-3 mb-10">
-          <span className="px-3.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold border border-slate-200 shadow-xs uppercase tracking-wider">
-            Frequently Answered
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading">
-            Got Questions? We Have Answers.
-          </h2>
-        </div>
+      {/* ===================== FAQ ACCORDION ===================== */}
+      <section className="max-w-3xl mx-auto px-4">
+        <AnimatedReveal>
+          <div className="text-center space-y-2 mb-6 sm:mb-8">
+            <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+              FAQ
+            </span>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+              Frequently Asked Questions
+            </h2>
+          </div>
+        </AnimatedReveal>
 
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {faqs.map((faq, idx) => {
             const isOpen = activeFaq === idx;
             return (
-              <div
-                key={idx}
-                className="card-clay rounded-2xl border border-white/90 shadow-xs overflow-hidden transition-all"
-              >
-                <button
-                  onClick={() => setActiveFaq(isOpen ? null : idx)}
-                  className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-slate-900 hover:text-violet-600 transition-colors"
-                >
-                  <span>{faq.q}</span>
-                  <span className="text-lg text-slate-400 shrink-0">{isOpen ? '−' : '+'}</span>
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3 animate-pop-in">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
+              <AnimatedReveal key={idx} delayClass={`stagger-${(idx % 4) + 1}` as any}>
+                <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden transition-all">
+                  <button
+                    onClick={() => setActiveFaq(isOpen ? null : idx)}
+                    className="w-full p-4 text-left flex items-center justify-between gap-3 font-semibold text-xs sm:text-sm text-slate-900 hover:text-violet-700 transition-colors cursor-pointer"
+                  >
+                    <span>{faq.q}</span>
+                    <span className="text-base text-slate-400 shrink-0 font-mono font-bold">
+                      {isOpen ? '−' : '+'}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-4 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              </AnimatedReveal>
             );
           })}
         </div>
       </section>
 
-      {/* ===================== BOTTOM CTA BANNER ===================== */}
+      {/* ===================== CLASSIC BOTTOM CTA ===================== */}
       <section className="max-w-5xl mx-auto px-4">
-        <div className="card-clay p-8 sm:p-12 rounded-3xl sm:rounded-4xl border border-white/90 shadow-clay-card bg-gradient-to-br from-violet-600 via-indigo-600 to-purple-700 text-white text-center space-y-6 relative overflow-hidden">
-          
-          {/* Subtle Ambient Background Bubbles */}
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
-          <div className="absolute -bottom-12 -left-12 w-48 h-48 rounded-full bg-pink-500/20 blur-2xl pointer-events-none"></div>
+        <AnimatedReveal>
+          <div className="p-8 sm:p-12 rounded-2xl sm:rounded-3xl bg-slate-900 text-white text-center space-y-5 border border-slate-800 shadow-lg">
+            
+            <div className="max-w-xl mx-auto space-y-2">
+              <span className="px-3 py-0.5 rounded-full bg-slate-800 text-slate-300 text-xs font-semibold uppercase tracking-wider inline-block">
+                Start Immediately
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight leading-tight">
+                Ready to Perfect Your Delivery?
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                No account required, no credit cards, zero cloud uploads. Start testing in 5 seconds.
+              </p>
+            </div>
 
-          <div className="relative z-10 max-w-2xl mx-auto space-y-3">
-            <h2 className="text-3xl sm:text-5xl font-black font-heading tracking-tight leading-tight">
-              Ready to Perfect Your Next Speech?
-            </h2>
-            <p className="text-sm sm:text-base text-violet-100/90 leading-relaxed font-normal">
-              No registration, no credit cards, no audio uploads. Start analyzing your cadence in 5 seconds with zero setup.
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => onGetStarted('record')}
+                className="px-6 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm shadow-sm transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Clay3DIcon name="mic" size="xs" />
+                <span>Launch Speech Studio Now</span>
+              </button>
+
+              <button
+                onClick={onOpenJsonModal}
+                className="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm border border-slate-700 transition-all active:scale-[0.98] cursor-pointer"
+              >
+                <span>Inspect PRD JSON Schema</span>
+              </button>
+            </div>
+
+            <p className="text-[11px] text-slate-400 font-medium pt-1">
+              Open-Source Contrastive Speech Diagnostics · Smart India Hackathon
             </p>
           </div>
-
-          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={() => onGetStarted('record')}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-violet-950 font-black text-sm sm:text-base shadow-clay-btn-secondary hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
-            >
-              <Clay3DIcon name="mic" size="sm" floating />
-              <span>Launch VoxPulse Studio Now</span>
-            </button>
-
-            <button
-              onClick={onOpenJsonModal}
-              className="w-full sm:w-auto px-6 py-4 rounded-2xl bg-white/15 hover:bg-white/20 border border-white/30 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-95"
-            >
-              <Clay3DIcon name="document" size="xs" />
-              <span>Inspect PRD JSON Schema</span>
-            </button>
-          </div>
-
-          <p className="relative z-10 text-[11px] text-violet-200 font-medium">
-            Open-source speech analytics framework · Smart India Hackathon
-          </p>
-        </div>
+        </AnimatedReveal>
       </section>
 
       {/* ===================== FOOTER ===================== */}
-      <footer className="border-t border-slate-200/80 pt-8 max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1 shadow-xs flex items-center justify-center">
-            <img src="/app-icon.png" alt="VoxPulse" className="w-full h-full object-contain rounded-lg" />
+      <footer className="border-t border-slate-200 pt-6 max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200 p-0.5 flex items-center justify-center">
+            <img src="/app-icon.png" alt="VoxPulse" className="w-full h-full object-contain rounded" />
           </div>
           <span className="font-heading font-black text-slate-800 text-sm">
             Vox<span className="text-violet-600">Pulse</span>
           </span>
           <span className="text-slate-300">|</span>
-          <span>Contrastive Speech Diagnostics</span>
+          <span className="text-[11px]">Contrastive Speech Diagnostics</span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button onClick={() => onGetStarted('record')} className="hover:text-violet-600 transition-colors">
+        <div className="flex items-center gap-4 text-xs">
+          <button onClick={() => onGetStarted('record')} className="hover:text-violet-600 transition-colors cursor-pointer">
             Studio
           </button>
-          <button onClick={() => onGetStarted('presets')} className="hover:text-violet-600 transition-colors">
+          <button onClick={() => onGetStarted('presets')} className="hover:text-violet-600 transition-colors cursor-pointer">
             Benchmarks
           </button>
-          <button onClick={onOpenJsonModal} className="hover:text-violet-600 transition-colors">
+          <button onClick={onOpenJsonModal} className="hover:text-violet-600 transition-colors cursor-pointer">
             PRD Contract
           </button>
-          <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[10px] font-mono font-bold text-slate-600">
+          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-mono font-bold text-slate-600">
             v1.2.0
           </span>
         </div>

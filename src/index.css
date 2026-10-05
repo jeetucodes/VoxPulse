@@ -307,4 +307,62 @@ input[type="range"]::-webkit-slider-runnable-track {
   will-change: transform;
 }
 
+/* Classic Gentle Card Reveal Animation */
+@keyframes cardUnfold {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-card-open {
+  animation: cardUnfold 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+
+@keyframes scanline {
+  0% { left: 0%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: 98%; opacity: 0; }
+}
+
+.animate-scanline {
+  animation: scanline 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes eqPulse {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+
+.animate-eq-1 { animation: eqPulse 0.9s ease-in-out infinite; }
+.animate-eq-2 { animation: eqPulse 1.2s ease-in-out infinite 0.2s; }
+.animate-eq-3 { animation: eqPulse 0.8s ease-in-out infinite 0.4s; }
+.animate-eq-4 { animation: eqPulse 1.4s ease-in-out infinite 0.1s; }
+.animate-eq-5 { animation: eqPulse 1.0s ease-in-out infinite 0.3s; }
+
+/* Shimmer highlight for hero badge & cards */
+@keyframes shimmerSweep {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+  animation: shimmerSweep 3s ease-in-out infinite;
+}
+
+/* Stagger delay utility classes */
+.stagger-1 { animation-delay: 80ms !important; }
+.stagger-2 { animation-delay: 160ms !important; }
+.stagger-3 { animation-delay: 240ms !important; }
+.stagger-4 { animation-delay: 320ms !important; }
+.stagger-5 { animation-delay: 400ms !important; }
+.stagger-6 { animation-delay: 480ms !important; }
+
+
 

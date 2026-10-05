@@ -470,11 +470,13 @@ export function App() {
     </footer>
   )}
 
-      {/* Floating Speech Assistant (FR-6 & FR-8 Multi-Lingual Full-Screen Chatbot) */}
-      <AskForHelp
-        result={analysisResult}
-        onSeek={handleSeek}
-      />
+      {/* Floating Speech Assistant (FR-6 & FR-8 Multi-Lingual Full-Screen Chatbot) - Only visible in studio/dashboard */}
+      {currentView === 'studio' && (
+        <AskForHelp
+          result={analysisResult}
+          onSeek={handleSeek}
+        />
+      )}
 
       {/* PRD Section 8 JSON Data Contract Modal */}
       <JsonModal
