@@ -78,12 +78,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Subtle architect dot grid */}
           <div className="absolute inset-0 bg-dot-pattern opacity-60"></div>
 
-          {/* Floating Iridescent Water Bubbles (Mobile: Exactly 2 Big Statement Bubbles | Desktop: All 8 Grand Bubbles) */}
-          {/* Bubble 1: Top-left big water bubble (large statement bubble on both mobile and desktop) */}
-          <div className="water-bubble w-48 h-48 sm:w-80 sm:h-80 lg:w-[350px] lg:h-[350px] -top-8 -left-12 sm:-top-16 sm:-left-20 animate-bubble-1 opacity-85 sm:opacity-90"></div>
+          {/* Floating Iridescent Water Bubbles (Mobile: 1 Upar / 1 Niche Floating Bubbles | Desktop: All 8 Grand Bubbles) */}
+          {/* Bubble 1 (UPAR / Top-Left): Big floating water bubble on top */}
+          <div className="water-bubble w-48 h-48 sm:w-80 sm:h-80 lg:w-[350px] lg:h-[350px] -top-8 -left-10 sm:-top-16 sm:-left-20 animate-bubble-1 opacity-85 sm:opacity-90"></div>
           
-          {/* Bubble 2: Top-right big water bubble (large statement bubble on both mobile and desktop) */}
-          <div className="water-bubble w-44 h-44 sm:w-72 sm:h-72 lg:w-[300px] lg:h-[300px] top-4 -right-10 sm:top-10 sm:-right-16 animate-bubble-2 opacity-80 sm:opacity-85"></div>
+          {/* Bubble 2 (NICHE / Bottom-Right): Big floating water bubble at bottom */}
+          <div className="water-bubble w-48 h-48 sm:w-72 sm:h-72 lg:w-[300px] lg:h-[300px] bottom-2 -right-8 sm:bottom-auto sm:top-10 sm:-right-16 animate-bubble-2 opacity-85 sm:opacity-85"></div>
           
           {/* Bubble 3: Desktop-only mid-left bubble */}
           <div className="hidden sm:block water-bubble sm:w-56 sm:h-56 lg:w-64 lg:h-64 top-[50%] left-[1%] sm:left-[4%] animate-bubble-3 opacity-80"></div>
