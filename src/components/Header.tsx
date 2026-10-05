@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Clay3DIcon } from './Clay3DIcon';
 
 interface HeaderProps {
+  currentView?: 'landing' | 'studio';
+  onNavigateView?: (view: 'landing' | 'studio') => void;
   onReset: () => void;
   onOpenJsonModal: () => void;
   activeSampleTitle?: string;
@@ -10,6 +12,8 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({
+  currentView = 'landing',
+  onNavigateView,
   onReset,
   onOpenJsonModal,
   activeSampleTitle,
@@ -18,6 +22,14 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleLogoClick = () => {
+    if (currentView === 'studio' && onNavigateView) {
+      onNavigateView('landing');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Close mobile menu on Escape key
   useEffect(() => {
@@ -60,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
         
         {/* Modern App Icon & Branding */}
         <div className="flex items-center space-x-2.5 sm:space-x-3.5">
-          <div className="relative group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div className="relative group cursor-pointer" onClick={handleLogoClick}>
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-b from-white to-slate-50 shadow-clay-card flex items-center justify-center p-0.5 transition-all duration-300 group-hover:scale-105 border border-white/90 relative overflow-hidden">
               <img 
                 src="/app-icon.png" 
@@ -78,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div className="flex items-center space-x-1.5 sm:space-x-2">
               <h1 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                onClick={handleLogoClick}
                 className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 font-heading flex items-center cursor-pointer select-none"
               >
                 Vox<span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Pulse</span>
@@ -96,7 +108,27 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Desktop Action Controls (hidden on mobile, shown on sm+) */}
         <div className="hidden sm:flex items-center space-x-2 sm:space-x-3">
-          {hasAudio && (
+          {/* View switcher between Landing and Studio */}
+          {currentView === 'landing' ? (
+            <button
+              onClick={() => onNavigateView?.('studio')}
+              className="btn-clay-primary px-4 py-2 text-xs font-bold text-white shadow-sugary-violet flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all"
+            >
+              <Clay3DIcon name="mic" size="xs" />
+              <span>Launch Studio</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onNavigateView?.('landing')}
+              className="btn-clay-secondary px-3.5 py-2 text-xs font-bold text-slate-700 flex items-center gap-1.5 hover:text-violet-600 transition-colors"
+              title="Return to Landing Page"
+            >
+              <Clay3DIcon name="sparkles" size="xs" />
+              <span>Home</span>
+            </button>
+          )}
+
+          {currentView === 'studio' && hasAudio && (
             <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white border border-slate-200/80 text-xs text-slate-700 font-semibold shadow-clay-pill">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
               <Clay3DIcon name="music" size="xs" />
@@ -115,18 +147,18 @@ export const Header: React.FC<HeaderProps> = ({
           {/* PRD Data Contract Button */}
           <button
             onClick={onOpenJsonModal}
-            className="btn-clay-secondary flex items-center space-x-2 px-3.5 py-2 text-xs"
+            className="btn-clay-secondary flex items-center space-x-2 px-3.5 py-2 text-xs font-bold text-slate-700"
             title="Inspect or Export JSON Data Contract"
           >
             <Clay3DIcon name="document" size="xs" />
             <span>Data Contract</span>
           </button>
 
-          {/* Reset / New Speech Button */}
-          {hasAudio && (
+          {/* Reset / New Speech Button in Studio */}
+          {currentView === 'studio' && hasAudio && (
             <button
               onClick={onReset}
-              className="btn-clay-secondary flex items-center space-x-2 px-3.5 py-2 text-xs"
+              className="btn-clay-secondary flex items-center space-x-2 px-3.5 py-2 text-xs font-bold text-slate-700"
               title="Reset and analyze new speech"
             >
               <Clay3DIcon name="refresh" size="xs" />
@@ -137,8 +169,15 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Mobile Action Controls (< sm screens) */}
         <div className="flex sm:hidden items-center space-x-2">
-          {/* Quick Reset Button if Audio is loaded */}
-          {hasAudio && (
+          {currentView === 'landing' ? (
+            <button
+              onClick={() => onNavigateView?.('studio')}
+              className="btn-clay-primary px-3 py-1.5 text-xs flex items-center gap-1 font-bold text-white shadow-sugary-violet"
+            >
+              <Clay3DIcon name="mic" size="xs" />
+              <span className="text-[11px]">Studio</span>
+            </button>
+          ) : hasAudio ? (
             <button
               onClick={onReset}
               className="btn-clay-secondary px-2.5 py-1.5 text-xs flex items-center gap-1 font-bold text-slate-700"
@@ -147,17 +186,14 @@ export const Header: React.FC<HeaderProps> = ({
               <Clay3DIcon name="refresh" size="xs" />
               <span className="text-[11px]">Reset</span>
             </button>
-          )}
-
-          {/* Quick JSON Button if no Audio yet */}
-          {!hasAudio && (
+          ) : (
             <button
-              onClick={onOpenJsonModal}
+              onClick={() => onNavigateView?.('landing')}
               className="btn-clay-secondary px-2.5 py-1.5 text-xs flex items-center gap-1 font-bold text-slate-700"
-              title="Inspect JSON Contract"
+              title="Return Home"
             >
-              <Clay3DIcon name="document" size="xs" />
-              <span className="text-[11px]">JSON</span>
+              <Clay3DIcon name="sparkles" size="xs" />
+              <span className="text-[11px]">Home</span>
             </button>
           )}
 
@@ -208,6 +244,39 @@ export const Header: React.FC<HeaderProps> = ({
             ref={menuRef}
             className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-slate-200/90 shadow-pop-lg p-4 sm:hidden z-50 animate-pop-in space-y-3.5 max-h-[calc(100vh-4.5rem)] overflow-y-auto"
           >
+            {/* View Switcher in Mobile Drawer */}
+            <div>
+              {currentView === 'landing' ? (
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigateView?.('studio');
+                  }}
+                  className="w-full btn-clay-primary py-2.5 px-3 rounded-2xl flex items-center justify-between text-xs font-bold text-white shadow-sugary-violet"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clay3DIcon name="mic" size="xs" />
+                    <span>Launch Speech Studio</span>
+                  </div>
+                  <span>→</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onNavigateView?.('landing');
+                  }}
+                  className="w-full btn-clay-secondary py-2.5 px-3 rounded-2xl flex items-center justify-between text-xs font-bold text-slate-800"
+                >
+                  <div className="flex items-center gap-2">
+                    <Clay3DIcon name="sparkles" size="xs" />
+                    <span>Return to Home / Overview</span>
+                  </div>
+                  <span>→</span>
+                </button>
+              )}
+            </div>
+
             {/* Audio Status Card */}
             {hasAudio ? (
               <div className="p-3 rounded-2xl bg-violet-50/80 border border-violet-100 shadow-clay-card flex items-center justify-between gap-3">

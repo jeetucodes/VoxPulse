@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Header } from './components/Header';
+import { LandingPage } from './components/LandingPage';
 import { AudioUploader } from './components/AudioUploader';
 import { AudioPlayer } from './components/AudioPlayer';
 import { ScoreOverview } from './components/ScoreOverview';
@@ -14,6 +15,9 @@ import { SAMPLE_SPEECHES, generateSyntheticSpeechAudio } from './services/sample
 import type { AnalysisResult, SampleSpeech } from './types/speech';
 
 export function App() {
+  const [currentView, setCurrentView] = useState<'landing' | 'studio'>('landing');
+  const [uploaderInitialTab, setUploaderInitialTab] = useState<'record' | 'upload' | 'presets'>('record');
+
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [audioBuffer, setAudioBuffer] = useState<AudioBuffer | null>(null);
   const [activeSampleTitle, setActiveSampleTitle] = useState<string>('');
@@ -270,6 +274,18 @@ export function App() {
     }
   };
 
+  const handleGetStartedFromLanding = (preferredTab: 'record' | 'upload' | 'presets' = 'record') => {
+    setUploaderInitialTab(preferredTab);
+    setCurrentView('studio');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectBenchmarkFromLanding = (sample: SampleSpeech) => {
+    setCurrentView('studio');
+    handleSelectSample(sample);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-dot-pattern text-slate-900 flex flex-col font-body selection:bg-violet-600 selection:text-white relative overflow-hidden">
       
@@ -280,6 +296,11 @@ export function App() {
 
       {/* Top Header */}
       <Header
+        currentView={currentView}
+        onNavigateView={(view) => {
+          setCurrentView(view);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         onReset={handleReset}
         onOpenJsonModal={() => setIsJsonModalOpen(true)}
         activeSampleTitle={activeSampleTitle}
@@ -290,35 +311,44 @@ export function App() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-8">
         
-        {/* Analysis error banner */}
-        {analysisError && !analysisResult && (
-          <div className="max-w-2xl mx-auto animate-pop-in">
-            <div className="p-5 rounded-3xl bg-rose-50 border border-rose-200 shadow-clay-card flex items-start gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-rose-100 border border-rose-200 flex items-center justify-center shrink-0 text-lg">⚠️</div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-rose-900 text-sm mb-1">Analysis Failed</p>
-                <p className="text-xs text-rose-700 font-medium leading-relaxed">{analysisError}</p>
-              </div>
-              <button
-                onClick={() => setAnalysisError(null)}
-                className="shrink-0 text-xs font-bold text-rose-600 underline hover:text-rose-800"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* If no audio loaded, show uploader hero */}
-        {!analysisResult && (
-          <AudioUploader
-            onSelectSample={handleSelectSample}
-            onUploadFile={handleUploadFile}
-            isAnalyzing={isAnalyzing}
-            analysisProgress={analysisProgress}
-            analysisStage={analysisStage}
+        {currentView === 'landing' ? (
+          <LandingPage
+            onGetStarted={handleGetStartedFromLanding}
+            onSelectBenchmark={handleSelectBenchmarkFromLanding}
+            onOpenJsonModal={() => setIsJsonModalOpen(true)}
           />
-        )}
+        ) : (
+          <>
+            {/* Analysis error banner */}
+            {analysisError && !analysisResult && (
+              <div className="max-w-2xl mx-auto animate-pop-in">
+                <div className="p-5 rounded-3xl bg-rose-50 border border-rose-200 shadow-clay-card flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-rose-100 border border-rose-200 flex items-center justify-center shrink-0 text-lg">⚠️</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-rose-900 text-sm mb-1">Analysis Failed</p>
+                    <p className="text-xs text-rose-700 font-medium leading-relaxed">{analysisError}</p>
+                  </div>
+                  <button
+                    onClick={() => setAnalysisError(null)}
+                    className="shrink-0 text-xs font-bold text-rose-600 underline hover:text-rose-800"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* If no audio loaded, show uploader hero */}
+            {!analysisResult && (
+              <AudioUploader
+                onSelectSample={handleSelectSample}
+                onUploadFile={handleUploadFile}
+                isAnalyzing={isAnalyzing}
+                analysisProgress={analysisProgress}
+                analysisStage={analysisStage}
+                initialTab={uploaderInitialTab}
+              />
+            )}
 
         {/* Once audio is loaded & analyzed, show complete dashboard */}
         {analysisResult && (
@@ -446,19 +476,22 @@ export function App() {
 
           </div>
         )}
+      </>
+    )}
+  </main>
 
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-200/80 bg-white/70 backdrop-blur-sm py-6 text-center text-xs text-slate-500 mt-8">
-        <p className="font-medium">
-          Multimodal AI Hackathon 2026 • Contrastive Speech Analytics & Temporal Flaw Grounding
-        </p>
-        <p className="mt-1 text-[11px] text-slate-700 font-semibold flex items-center justify-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-          VoxPulse Speech Intelligence • 100% Client-Side Web Audio DSP
-        </p>
-      </footer>
+  {/* Studio Footer */}
+  {currentView === 'studio' && (
+    <footer className="border-t border-slate-200/80 bg-white/70 backdrop-blur-sm py-6 text-center text-xs text-slate-500 mt-8">
+      <p className="font-medium">
+        Multimodal AI Hackathon 2026 • Contrastive Speech Analytics & Temporal Flaw Grounding
+      </p>
+      <p className="mt-1 text-[11px] text-slate-700 font-semibold flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+        VoxPulse Speech Intelligence • 100% Client-Side Web Audio DSP
+      </p>
+    </footer>
+  )}
 
       {/* PRD Section 8 JSON Data Contract Modal */}
       <JsonModal

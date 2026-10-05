@@ -11,6 +11,7 @@ interface AudioUploaderProps {
   isAnalyzing: boolean;
   analysisProgress: number;
   analysisStage: string;
+  initialTab?: 'record' | 'upload' | 'presets';
 }
 
 export const AudioUploader: React.FC<AudioUploaderProps> = ({
@@ -18,14 +19,21 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
   onUploadFile,
   isAnalyzing,
   analysisProgress,
-  analysisStage
+  analysisStage,
+  initialTab = 'record'
 }) => {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [transcriptText, setTranscriptText] = useState('');
   const [showTranscriptInput, setShowTranscriptInput] = useState(false);
-  const [activeTab, setActiveTab] = useState<'record' | 'upload' | 'presets'>('record');
+  const [activeTab, setActiveTab] = useState<'record' | 'upload' | 'presets'>(initialTab);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
