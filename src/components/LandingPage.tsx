@@ -456,8 +456,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ===================== BENCHMARK PRESETS SHOWCASE ===================== */}
       <section className="max-w-6xl mx-auto px-4">
         <div className="card-clay card-clay-violet p-6 sm:p-10 rounded-3xl sm:rounded-4xl relative overflow-hidden shadow-clay-card space-y-8">
-          <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-32" />
-
           <div className="relative z-10 space-y-8">
           
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200/80 pb-6">
