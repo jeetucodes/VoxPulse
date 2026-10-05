@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Clay3DIcon, type Clay3DIconName } from './Clay3DIcon';
+import { WaterWaveDecoration } from './WaterWaveDecoration';
 import { SAMPLE_SPEECHES } from '../services/sampleData';
 import type { SampleSpeech } from '../types/speech';
 
@@ -195,11 +196,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* 3D Clay Dashboard Mockup Container */}
           <div 
             onClick={() => onGetStarted('record')}
-            className="card-clay p-4 sm:p-7 rounded-3xl sm:rounded-4xl border border-white/90 shadow-clay-card hover:shadow-clay-card-hover transition-all duration-500 cursor-pointer group text-left relative overflow-hidden"
+            className="card-clay card-clay-violet p-4 sm:p-7 rounded-3xl sm:rounded-4xl shadow-clay-card hover:shadow-clay-card-hover transition-all duration-500 cursor-pointer group text-left relative overflow-hidden"
             title="Click to launch VoxPulse Studio"
           >
+            <WaterWaveDecoration color="rgba(139, 92, 246, 0.09)" height="h-28" />
+
             {/* Top Bar of Mockup */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5 relative z-10">
               <div className="flex items-center gap-3.5">
                 <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 text-white flex items-center justify-center p-1 shadow-sm">
                   <img src="/app-icon.png" alt="App" className="w-full h-full object-contain rounded-xl" />
@@ -309,25 +312,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ===================== STATS / TRUST METRICS STRIP ===================== */}
       <section className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {stats.map((s, idx) => (
-            <div 
-              key={idx} 
-              className="card-clay p-5 sm:p-6 rounded-3xl border border-white/90 shadow-clay-card flex flex-col justify-between space-y-2 hover:scale-[1.02] transition-transform"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-2xl sm:text-4xl font-black font-heading tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
-                  {s.value}
-                </span>
-                <div className="w-8 h-8 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center shadow-xs">
-                  <Clay3DIcon name={s.icon} size="xs" />
+          {stats.map((s, idx) => {
+            const statThemes = ['card-clay-violet', 'card-clay-pink', 'card-clay-emerald', 'card-clay-amber'];
+            const statColors = ['rgba(139, 92, 246, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(16, 185, 129, 0.08)', 'rgba(245, 158, 11, 0.08)'];
+            return (
+              <div 
+                key={idx} 
+                className={`card-clay ${statThemes[idx % statThemes.length]} p-5 sm:p-6 rounded-3xl relative overflow-hidden shadow-clay-card flex flex-col justify-between space-y-2 hover:scale-[1.02] transition-transform`}
+              >
+                <WaterWaveDecoration color={statColors[idx % statColors.length]} height="h-12" opacity="opacity-70" />
+                <div className="relative z-10 flex items-center justify-between">
+                  <span className="text-2xl sm:text-4xl font-black font-heading tracking-tight bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                    {s.value}
+                  </span>
+                  <div className="w-8 h-8 rounded-xl bg-white/90 border border-slate-200/80 flex items-center justify-center shadow-xs">
+                    <Clay3DIcon name={s.icon} size="xs" />
+                  </div>
+                </div>
+                <div className="relative z-10">
+                  <p className="font-bold text-slate-800 text-sm">{s.label}</p>
+                  <p className="text-xs text-slate-600 font-normal leading-relaxed">{s.desc}</p>
                 </div>
               </div>
-              <div>
-                <p className="font-bold text-slate-800 text-sm">{s.label}</p>
-                <p className="text-xs text-slate-500 font-normal leading-relaxed">{s.desc}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -346,40 +354,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-          {steps.map((st, i) => (
-            <div 
-              key={i}
-              className="card-clay p-6 sm:p-7 rounded-3xl border border-white/90 shadow-clay-card flex flex-col justify-between space-y-5 relative group hover:-translate-y-1 transition-all"
-            >
-              <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-100 shadow-clay-pill flex items-center justify-center p-2">
-                  <Clay3DIcon name={st.icon} size="sm" floating />
+          {steps.map((st, i) => {
+            const stepThemes = ['card-clay-violet', 'card-clay-pink', 'card-clay-emerald'];
+            const stepColors = ['rgba(139, 92, 246, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(16, 185, 129, 0.08)'];
+            return (
+              <div 
+                key={i}
+                className={`card-clay ${stepThemes[i % stepThemes.length]} p-6 sm:p-7 rounded-3xl relative overflow-hidden shadow-clay-card flex flex-col justify-between space-y-5 group hover:-translate-y-1 transition-all`}
+              >
+                <WaterWaveDecoration color={stepColors[i % stepColors.length]} height="h-16" />
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="w-12 h-12 rounded-2xl bg-white/90 border border-slate-100 shadow-clay-pill flex items-center justify-center p-2">
+                    <Clay3DIcon name={st.icon} size="sm" floating />
+                  </div>
+                  <span className="text-3xl font-black font-heading text-slate-300 group-hover:text-violet-300 transition-colors">
+                    {st.num}
+                  </span>
                 </div>
-                <span className="text-3xl font-black font-heading text-slate-200 group-hover:text-violet-200 transition-colors">
-                  {st.num}
-                </span>
-              </div>
 
-              <div className="space-y-2">
-                <h3 className="font-heading font-black text-slate-900 text-lg sm:text-xl">
-                  {st.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-                  {st.desc}
-                </p>
-              </div>
+                <div className="relative z-10 space-y-2">
+                  <h3 className="font-heading font-black text-slate-900 text-lg sm:text-xl">
+                    {st.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+                    {st.desc}
+                  </p>
+                </div>
 
-              <div className="pt-2">
-                <button
-                  onClick={() => onGetStarted(i === 0 ? 'record' : 'presets')}
-                  className="text-xs font-bold text-violet-600 group-hover:text-violet-800 flex items-center gap-1 transition-colors"
-                >
-                  <span>Explore step</span>
-                  <span>→</span>
-                </button>
+                <div className="relative z-10 pt-2">
+                  <button
+                    onClick={() => onGetStarted(i === 0 ? 'record' : 'presets')}
+                    className="text-xs font-bold text-violet-700 group-hover:text-violet-900 flex items-center gap-1 transition-colors"
+                  >
+                    <span>Explore step</span>
+                    <span>→</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -398,46 +411,54 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f, i) => (
-            <div 
-              key={i}
-              className="card-clay p-6 rounded-3xl border border-white/90 shadow-clay-card flex flex-col justify-between space-y-4 hover:shadow-clay-card-hover transition-all"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 shadow-clay-pill flex items-center justify-center">
-                    <Clay3DIcon name={f.icon} size="xs" />
+          {features.map((f, i) => {
+            const bentoThemes = ['card-clay-violet', 'card-clay-cyan', 'card-clay-emerald', 'card-clay-pink', 'card-clay-amber', 'card-clay-violet'];
+            const bentoColors = ['rgba(139, 92, 246, 0.08)', 'rgba(6, 182, 212, 0.08)', 'rgba(16, 185, 129, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(245, 158, 11, 0.08)', 'rgba(139, 92, 246, 0.08)'];
+            return (
+              <div 
+                key={i}
+                className={`card-clay ${bentoThemes[i % bentoThemes.length]} p-6 rounded-3xl relative overflow-hidden shadow-clay-card flex flex-col justify-between space-y-4 hover:shadow-clay-card-hover transition-all`}
+              >
+                <WaterWaveDecoration color={bentoColors[i % bentoColors.length]} height="h-14" />
+                <div className="relative z-10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-2xl bg-white/90 border border-slate-100 shadow-clay-pill flex items-center justify-center">
+                      <Clay3DIcon name={f.icon} size="xs" />
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/80 border border-slate-200/80 text-[11px] font-bold text-slate-700">
+                      {f.tag}
+                    </span>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200/80 text-[11px] font-bold text-slate-600">
-                    {f.tag}
-                  </span>
+
+                  <h3 className="font-heading font-black text-slate-900 text-base sm:text-lg">
+                    {f.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+                    {f.desc}
+                  </p>
                 </div>
 
-                <h3 className="font-heading font-black text-slate-900 text-base sm:text-lg">
-                  {f.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500 font-normal leading-relaxed">
-                  {f.desc}
-                </p>
+                <div className="relative z-10 pt-2 border-t border-slate-200/50">
+                  <button
+                    onClick={() => onGetStarted('record')}
+                    className="text-xs font-bold text-slate-700 hover:text-violet-700 flex items-center gap-1 transition-colors"
+                  >
+                    <span>Test in studio</span>
+                    <span>→</span>
+                  </button>
+                </div>
               </div>
-
-              <div className="pt-2 border-t border-slate-100/80">
-                <button
-                  onClick={() => onGetStarted('record')}
-                  className="text-xs font-bold text-slate-700 hover:text-violet-600 flex items-center gap-1 transition-colors"
-                >
-                  <span>Test in studio</span>
-                  <span>→</span>
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* ===================== BENCHMARK PRESETS SHOWCASE ===================== */}
       <section className="max-w-6xl mx-auto px-4">
-        <div className="card-clay p-6 sm:p-10 rounded-3xl sm:rounded-4xl border border-white/90 shadow-clay-card space-y-8">
+        <div className="card-clay card-clay-violet p-6 sm:p-10 rounded-3xl sm:rounded-4xl relative overflow-hidden shadow-clay-card space-y-8">
+          <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-32" />
+
+          <div className="relative z-10 space-y-8">
           
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200/80 pb-6">
             <div>
@@ -462,50 +483,56 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {SAMPLE_SPEECHES.map((sample) => {
+            {SAMPLE_SPEECHES.map((sample, idx) => {
               const isChampion = sample.id === 'sample-ideal-baseline';
+              const cardThemes = ['card-clay-violet', 'card-clay-pink', 'card-clay-emerald'];
+              const waveColors = ['rgba(139, 92, 246, 0.08)', 'rgba(244, 63, 94, 0.08)', 'rgba(16, 185, 129, 0.08)'];
+              const appliedTheme = isChampion ? 'card-clay-amber' : cardThemes[idx % cardThemes.length];
+              const appliedWave = isChampion ? 'rgba(245, 158, 11, 0.08)' : waveColors[idx % waveColors.length];
+
               return (
                 <div
                   key={sample.id}
                   onClick={() => onSelectBenchmark(sample)}
-                  className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-4 hover:scale-[1.03] group ${
-                    isChampion
-                      ? 'bg-gradient-to-b from-amber-50 to-orange-50 border-amber-200 shadow-clay-card'
-                      : 'bg-white border-slate-200/80 shadow-xs hover:border-violet-300'
-                  }`}
+                  className={`p-5 rounded-2xl border card-clay ${appliedTheme} relative overflow-hidden transition-all cursor-pointer flex flex-col justify-between space-y-4 hover:scale-[1.03] group shadow-clay-card`}
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                        isChampion ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-violet-50 text-violet-800 border-violet-200'
-                      }`}>
-                        {sample.category}
-                      </span>
-                      <span className="text-xs font-extrabold text-slate-800">
-                        {sample.precomputedResult.overall_score}/100
-                      </span>
+                  <WaterWaveDecoration color={appliedWave} height="h-12" />
+
+                  <div className="relative z-10 flex flex-col justify-between h-full space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          isChampion ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-white/80 text-violet-800 border-violet-200'
+                        }`}>
+                          {sample.category}
+                        </span>
+                        <span className="text-xs font-extrabold text-slate-800 bg-white/90 px-2 py-0.5 rounded-full border border-slate-200">
+                          {sample.precomputedResult.overall_score}/100
+                        </span>
+                      </div>
+
+                      <h4 className="font-heading font-black text-slate-900 text-sm line-clamp-2 group-hover:text-violet-700 transition-colors">
+                        {sample.title}
+                      </h4>
+
+                      <p className="text-[11px] text-slate-600 line-clamp-2">
+                        {sample.description}
+                      </p>
                     </div>
 
-                    <h4 className="font-heading font-black text-slate-900 text-sm line-clamp-2 group-hover:text-violet-700 transition-colors">
-                      {sample.title}
-                    </h4>
-
-                    <p className="text-[11px] text-slate-500 line-clamp-2">
-                      {sample.description}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
-                    <span className="text-slate-400 font-mono text-[10px]">{sample.durationSec}s audio</span>
-                    <span className="font-bold text-violet-600 group-hover:translate-x-0.5 transition-transform">
-                      Analyze →
-                    </span>
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
+                      <span className="text-slate-500 font-mono text-[10px]">{sample.durationSec}s audio</span>
+                      <span className="font-bold text-violet-700 group-hover:translate-x-0.5 transition-transform">
+                        Analyze →
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
 
+          </div>
         </div>
       </section>
 

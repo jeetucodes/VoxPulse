@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Play, Pause, RotateCcw, FastForward, Rewind, VolumeX } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
+import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { Flaw } from '../types/speech';
 
 interface AudioPlayerProps {
@@ -228,10 +229,12 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   return (
-    <div className="card-clay p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-white/80 space-y-4 sm:space-y-5 relative overflow-hidden">
+    <div className="card-clay card-clay-violet p-4 sm:p-7 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-5 relative overflow-hidden">
+      <WaterWaveDecoration color="rgba(139, 92, 246, 0.09)" height="h-24 sm:h-28" />
       
-      {/* Waveform Header: Timestamps & Clean Flaw Indicators */}
-      <div className="space-y-2">
+      <div className="relative z-10 space-y-4 sm:space-y-5">
+        {/* Waveform Header: Timestamps & Clean Flaw Indicators */}
+        <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono font-semibold text-slate-700">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="text-violet-700 bg-violet-50/90 px-2.5 sm:px-3 py-1 rounded-full border border-violet-200/80 shadow-clay-pill text-[11px] sm:text-xs">
@@ -370,6 +373,8 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             />
           </div>
         </div>
+
+      </div>
 
       </div>
 

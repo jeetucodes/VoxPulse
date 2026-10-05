@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Clock, BarChart2, Check } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
+import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { Flaw, FlawType } from '../types/speech';
 
 interface FlawCardsProps {
@@ -37,37 +38,47 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
         return {
           icon: <Clay3DIcon name="rocket" size="md" withPedestal />,
           label: 'Fast Cadence',
-          badgeClass: 'bg-pink-50 text-pink-800 border-pink-200',
+          badgeClass: 'bg-pink-100/80 text-pink-800 border-pink-200',
           activeRing: 'ring-2 ring-pink-500 border-pink-300',
+          cardTheme: 'card-clay-pink',
+          waveColor: 'rgba(244, 63, 94, 0.08)',
         };
       case 'unnatural_pause':
         return {
           icon: <Clay3DIcon name="clock" size="md" withPedestal />,
           label: 'Unnatural Pause',
-          badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
+          badgeClass: 'bg-amber-100/80 text-amber-800 border-amber-200',
           activeRing: 'ring-2 ring-amber-500 border-amber-300',
+          cardTheme: 'card-clay-amber',
+          waveColor: 'rgba(245, 158, 11, 0.08)',
         };
       case 'mumbling':
         return {
           icon: <Clay3DIcon name="mic" size="md" withPedestal />,
           label: 'Muffled Articulation',
-          badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          badgeClass: 'bg-emerald-100/80 text-emerald-800 border-emerald-200',
           activeRing: 'ring-2 ring-emerald-500 border-emerald-300',
+          cardTheme: 'card-clay-emerald',
+          waveColor: 'rgba(16, 185, 129, 0.08)',
         };
       case 'monotone_pitch':
         return {
           icon: <Clay3DIcon name="target" size="md" withPedestal />,
           label: 'Monotone Pitch',
-          badgeClass: 'bg-violet-50 text-violet-800 border-violet-200',
+          badgeClass: 'bg-violet-100/80 text-violet-800 border-violet-200',
           activeRing: 'ring-2 ring-violet-500 border-violet-300',
+          cardTheme: 'card-clay-violet',
+          waveColor: 'rgba(139, 92, 246, 0.08)',
         };
       case 'volume_drop':
       default:
         return {
           icon: <Clay3DIcon name="speaker" size="md" withPedestal />,
           label: 'Volume Drop',
-          badgeClass: 'bg-rose-50 text-rose-800 border-rose-200',
+          badgeClass: 'bg-rose-100/80 text-rose-800 border-rose-200',
           activeRing: 'ring-2 ring-rose-500 border-rose-300',
+          cardTheme: 'card-clay-pink',
+          waveColor: 'rgba(244, 63, 94, 0.08)',
         };
     }
   };
@@ -86,12 +97,13 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
 
   if (flaws.length === 0) {
     return (
-      <div className="card-clay p-8 text-center rounded-3xl border border-white/80 space-y-4">
-        <div className="mx-auto flex justify-center">
+      <div className="card-clay card-clay-emerald p-8 text-center rounded-3xl relative overflow-hidden space-y-4">
+        <WaterWaveDecoration color="rgba(16, 185, 129, 0.1)" height="h-20" />
+        <div className="relative z-10 mx-auto flex justify-center">
           <Clay3DIcon name="trophy" size="xl" floating />
         </div>
-        <h3 className="text-xl font-black text-slate-900 font-heading">Zero Delivery Flaws Detected! 🎉</h3>
-        <p className="text-xs text-slate-500 font-medium max-w-md mx-auto">
+        <h3 className="relative z-10 text-xl font-black text-slate-900 font-heading">Zero Delivery Flaws Detected! 🎉</h3>
+        <p className="relative z-10 text-xs text-slate-600 font-medium max-w-md mx-auto">
           Your delivery rhythm, pause distribution, and vocal articulation align within 95% of national competition benchmark standards.
         </p>
       </div>
@@ -108,7 +120,7 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
             Temporally Grounded Flaws ({flaws.length})
           </h3>
         </div>
-        <span className="hidden sm:inline-block text-xs text-slate-500 font-semibold bg-white px-3.5 py-1.5 rounded-full border border-slate-200 shadow-clay-pill">
+        <span className="hidden sm:inline-block text-xs text-slate-600 font-semibold bg-white/90 px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-clay-pill">
           Click card to play exact audio region
         </span>
       </div>
@@ -122,39 +134,42 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
           return (
             <div
               key={flaw.id}
-              className={`card-clay transition-all duration-300 overflow-hidden ${
+              className={`card-clay ${badge.cardTheme} transition-all duration-300 relative overflow-hidden ${
                 isActive 
                   ? `${badge.activeRing} shadow-clay-card-hover scale-[1.01]` 
                   : 'hover:border-slate-300'
               }`}
             >
-              <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                
-                <div className="flex items-start gap-3 sm:gap-3.5 flex-1">
-                  {/* Category 3D Clay Icon with Pedestal */}
-                  {badge.icon}
+              <WaterWaveDecoration color={badge.waveColor} height="h-16" />
+              
+              <div className="relative z-10">
+                <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                  
+                  <div className="flex items-start gap-3 sm:gap-3.5 flex-1">
+                    {/* Category 3D Clay Icon with Pedestal */}
+                    {badge.icon}
 
-                  <div className="space-y-1.5 flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      <span className={`px-2.5 sm:px-3 py-0.5 rounded-full text-xs font-bold border shadow-sm ${badge.badgeClass}`}>
-                        {badge.label}
-                      </span>
-                      <span className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${getSeverityBadge(flaw.severity)}`}>
-                        {flaw.severity}
-                      </span>
-                    </div>
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className={`px-2.5 sm:px-3 py-0.5 rounded-full text-xs font-bold border shadow-sm ${badge.badgeClass}`}>
+                          {badge.label}
+                        </span>
+                        <span className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${getSeverityBadge(flaw.severity)}`}>
+                          {flaw.severity}
+                        </span>
+                      </div>
 
-                    <div className="flex items-center gap-2 text-xs font-mono font-semibold text-slate-700 pt-0.5 flex-wrap">
-                      <Clock className="w-3.5 h-3.5 text-violet-600 shrink-0" />
-                      <span className="bg-slate-50 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">
-                        {formatTime(flaw.start)} – {formatTime(flaw.end)}
-                      </span>
-                      <span className="text-slate-400 font-sans font-normal text-[11px]">
-                        ({(flaw.end - flaw.start).toFixed(1)}s duration)
-                      </span>
+                      <div className="flex items-center gap-2 text-xs font-mono font-semibold text-slate-700 pt-0.5 flex-wrap">
+                        <Clock className="w-3.5 h-3.5 text-violet-600 shrink-0" />
+                        <span className="bg-white/80 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">
+                          {formatTime(flaw.start)} – {formatTime(flaw.end)}
+                        </span>
+                        <span className="text-slate-400 font-sans font-normal text-[11px]">
+                          ({(flaw.end - flaw.start).toFixed(1)}s duration)
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
                 <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                   <button
@@ -236,6 +251,7 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
                 </div>
               )}
 
+              </div>
             </div>
           );
         })}

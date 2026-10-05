@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { LiveRecorderStudio } from './LiveRecorderStudio';
 import { Clay3DIcon, type Clay3DIconName } from './Clay3DIcon';
+import { WaterWaveDecoration } from './WaterWaveDecoration';
 import { SAMPLE_SPEECHES } from '../services/sampleData';
 import type { SampleSpeech } from '../types/speech';
 
@@ -86,21 +87,29 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
     if (isBaseline) {
       return {
         iconName: 'trophy' as Clay3DIconName,
-        badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+        badgeBg: 'bg-emerald-100/80 text-emerald-800 border-emerald-200',
+        cardTheme: 'card-clay-emerald',
+        waveColor: 'rgba(16, 185, 129, 0.08)',
       };
     }
     const themes = [
       {
         iconName: 'rocket' as Clay3DIconName,
-        badgeBg: 'bg-pink-50 text-pink-800 border-pink-200',
+        badgeBg: 'bg-pink-100/80 text-pink-800 border-pink-200',
+        cardTheme: 'card-clay-pink',
+        waveColor: 'rgba(244, 63, 94, 0.08)',
       },
       {
         iconName: 'clock' as Clay3DIconName,
-        badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
+        badgeBg: 'bg-amber-100/80 text-amber-800 border-amber-200',
+        cardTheme: 'card-clay-amber',
+        waveColor: 'rgba(245, 158, 11, 0.08)',
       },
       {
         iconName: 'target' as Clay3DIconName,
-        badgeBg: 'bg-violet-50 text-violet-800 border-violet-200',
+        badgeBg: 'bg-violet-100/80 text-violet-800 border-violet-200',
+        cardTheme: 'card-clay-violet',
+        waveColor: 'rgba(139, 92, 246, 0.08)',
       }
     ];
     return themes[index % themes.length];
@@ -194,7 +203,7 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
             onDragOver={handleDrag}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`relative p-10 rounded-3xl border-2 border-dashed transition-all cursor-pointer text-center flex flex-col items-center justify-center min-h-[250px] card-clay ${
+            className={`relative p-10 rounded-3xl border-2 border-dashed transition-all cursor-pointer text-center flex flex-col items-center justify-center min-h-[250px] card-clay card-clay-violet overflow-hidden ${
               dragActive
                 ? 'border-violet-500 bg-violet-50/40 ring-4 ring-violet-500/10'
                 : selectedFile
@@ -202,6 +211,7 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
                 : 'border-slate-300 hover:border-violet-400'
             }`}
           >
+            <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-24" />
             <input
               ref={fileInputRef}
               type="file"
@@ -210,30 +220,32 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
               onChange={handleFileInputChange}
             />
 
-            {selectedFile ? (
-              <div className="flex flex-col items-center space-y-3">
-                <Clay3DIcon name="music" size="xl" floating />
-                <div>
-                  <h4 className="text-base font-bold text-slate-900 font-heading">{selectedFile.name}</h4>
-                  <p className="text-xs text-slate-500 font-medium">
-                    {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Ready for contrastive DSP analysis
-                  </p>
+            <div className="relative z-10">
+              {selectedFile ? (
+                <div className="flex flex-col items-center space-y-3">
+                  <Clay3DIcon name="music" size="xl" floating />
+                  <div>
+                    <h4 className="text-base font-bold text-slate-900 font-heading">{selectedFile.name}</h4>
+                    <p className="text-xs text-slate-500 font-medium">
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB • Ready for contrastive DSP analysis
+                    </p>
+                  </div>
+                  <span className="text-xs text-violet-600 font-bold underline">Click to choose another file</span>
                 </div>
-                <span className="text-xs text-violet-600 font-bold underline">Click to choose another file</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center space-y-3">
-                <Clay3DIcon name="cloud" size="xl" floating />
-                <div>
-                  <p className="text-sm sm:text-base font-bold text-slate-900 font-heading">
-                    Drag and drop your speech recording here, or <span className="text-violet-600 underline">browse</span>
-                  </p>
-                  <p className="text-xs text-slate-500 font-medium mt-1">
-                    Supports MP3, WAV, M4A, OGG (Max 25MB). Processed 100% locally in your browser.
-                  </p>
+              ) : (
+                <div className="flex flex-col items-center space-y-3">
+                  <Clay3DIcon name="cloud" size="xl" floating />
+                  <div>
+                    <p className="text-sm sm:text-base font-bold text-slate-900 font-heading">
+                      Drag and drop your speech recording here, or <span className="text-violet-600 underline">browse</span>
+                    </p>
+                    <p className="text-xs text-slate-500 font-medium mt-1">
+                      Supports MP3, WAV, M4A, OGG (Max 25MB). Processed 100% locally in your browser.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Spoken Speech Words Input for Word Grounding */}
@@ -314,54 +326,58 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
                 <div
                   key={sample.id}
                   onClick={() => onSelectSample(sample)}
-                  className="relative p-6 rounded-3xl card-clay border border-white/80 hover:shadow-clay-card-hover hover:-translate-y-1.5 transition-all duration-200 cursor-pointer space-y-4 group"
+                  className={`relative p-6 rounded-3xl card-clay ${cardStyle.cardTheme} overflow-hidden hover:shadow-clay-card-hover hover:-translate-y-1.5 transition-all duration-200 cursor-pointer space-y-4 group`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3.5">
-                      <Clay3DIcon
-                        name={cardStyle.iconName}
-                        size="md"
-                        withPedestal
-                        floating={isBaseline}
-                      />
-                      <div>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${cardStyle.badgeBg} shadow-sm`}>
-                          {sample.category}
-                        </span>
-                        <h3 className="text-base font-black text-slate-900 font-heading mt-1 group-hover:text-violet-700 transition-colors">
-                          {sample.title}
-                        </h3>
+                  <WaterWaveDecoration color={cardStyle.waveColor} height="h-16" />
+
+                  <div className="relative z-10 space-y-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3.5">
+                        <Clay3DIcon
+                          name={cardStyle.iconName}
+                          size="md"
+                          withPedestal
+                          floating={isBaseline}
+                        />
+                        <div>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${cardStyle.badgeBg} shadow-sm`}>
+                            {sample.category}
+                          </span>
+                          <h3 className="text-base font-black text-slate-900 font-heading mt-1 group-hover:text-violet-700 transition-colors">
+                            {sample.title}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <div className="px-3 py-1 rounded-full bg-white/90 border border-slate-200 text-xs font-mono font-bold text-slate-600 flex items-center gap-1.5 shrink-0 shadow-sm">
+                        <Clay3DIcon name="clock" size="xs" />
+                        <span>{sample.durationSec}s</span>
                       </div>
                     </div>
 
-                    <div className="px-3 py-1 rounded-full bg-white/90 border border-slate-200 text-xs font-mono font-bold text-slate-600 flex items-center gap-1.5 shrink-0 shadow-sm">
-                      <Clay3DIcon name="clock" size="xs" />
-                      <span>{sample.durationSec}s</span>
+                    <p className="text-xs text-slate-600 font-normal line-clamp-2 leading-relaxed">
+                      {sample.description}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-200/60 text-xs">
+                      <div>
+                        {isBaseline ? (
+                          <span className="text-emerald-700 font-bold flex items-center gap-1.5 bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200 shadow-sm">
+                            <Clay3DIcon name="tick" size="xs" />
+                            Zero Flaws Benchmark
+                          </span>
+                        ) : (
+                          <span className="text-slate-600 font-medium">
+                            {sample.precomputedResult.flaws.length} Grounded Flaws Pre-identified
+                          </span>
+                        )}
+                      </div>
+
+                      <span className="text-violet-700 font-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        Load Case
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
                     </div>
-                  </div>
-
-                  <p className="text-xs text-slate-500 font-normal line-clamp-2 leading-relaxed">
-                    {sample.description}
-                  </p>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                    <div>
-                      {isBaseline ? (
-                        <span className="text-emerald-700 font-bold flex items-center gap-1.5 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 shadow-sm">
-                          <Clay3DIcon name="tick" size="xs" />
-                          Zero Flaws Benchmark
-                        </span>
-                      ) : (
-                        <span className="text-slate-500 font-medium">
-                          {sample.precomputedResult.flaws.length} Grounded Flaws Pre-identified
-                        </span>
-                      )}
-                    </div>
-
-                    <span className="text-violet-600 font-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      Load Case
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
                   </div>
                 </div>
               );

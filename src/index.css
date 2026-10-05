@@ -40,7 +40,7 @@ code, pre {
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
 }
 
-/* Authentic Claymorphic Card */
+/* Authentic Claymorphic Card with Soft Liquid Depth */
 .card-clay {
   background: linear-gradient(145deg, #FFFFFF 0%, #F8FAFC 100%);
   border: 1px solid rgba(255, 255, 255, 0.9);
@@ -51,6 +51,7 @@ code, pre {
     inset 2px 3px 6px 0px rgba(255, 255, 255, 0.95),
     inset -3px -3px 8px 0px rgba(15, 23, 42, 0.04);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
 }
 
 .card-clay:hover {
@@ -60,6 +61,32 @@ code, pre {
     4px 8px 16px -2px rgba(15, 23, 42, 0.05),
     inset 2px 3px 6px 0px rgba(255, 255, 255, 1),
     inset -3px -3px 8px 0px rgba(15, 23, 42, 0.05);
+}
+
+/* Light Pastel Themed Cards with Water Wave Depth */
+.card-clay-violet {
+  background: linear-gradient(145deg, rgba(250, 245, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 45%, rgba(243, 232, 255, 0.85) 100%);
+  border: 1px solid rgba(216, 180, 254, 0.65);
+}
+
+.card-clay-pink {
+  background: linear-gradient(145deg, rgba(255, 241, 242, 0.95) 0%, rgba(255, 255, 255, 0.98) 45%, rgba(254, 226, 226, 0.85) 100%);
+  border: 1px solid rgba(254, 205, 211, 0.65);
+}
+
+.card-clay-emerald {
+  background: linear-gradient(145deg, rgba(236, 253, 245, 0.95) 0%, rgba(255, 255, 255, 0.98) 45%, rgba(209, 250, 229, 0.85) 100%);
+  border: 1px solid rgba(167, 243, 208, 0.65);
+}
+
+.card-clay-amber {
+  background: linear-gradient(145deg, rgba(255, 251, 235, 0.95) 0%, rgba(255, 255, 255, 0.98) 45%, rgba(254, 243, 199, 0.85) 100%);
+  border: 1px solid rgba(253, 230, 138, 0.65);
+}
+
+.card-clay-cyan {
+  background: linear-gradient(145deg, rgba(240, 249, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 45%, rgba(224, 242, 254, 0.85) 100%);
+  border: 1px solid rgba(186, 230, 253, 0.65);
 }
 
 /* Clay Inset Well (e.g. for charts, transcript boxes, waveform areas) */
@@ -243,3 +270,17 @@ input[type="range"]::-webkit-slider-runnable-track {
 .animate-pulse-glow {
   animation: pulseGlow 4s ease-in-out infinite;
 }
+
+/* Water Wave Fluid Animation Keyframes */
+@keyframes waterWaveShift {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); }
+  50% { transform: translate3d(-25%, -2px, 0) scaleY(1.1); }
+  100% { transform: translate3d(-50%, 0, 0) scaleY(1); }
+}
+
+@keyframes waterWaveReverse {
+  0% { transform: translate3d(-50%, 0, 0) scaleY(1.05); }
+  50% { transform: translate3d(-25%, 3px, 0) scaleY(0.92); }
+  100% { transform: translate3d(0, 0, 0) scaleY(1.05); }
+}
+

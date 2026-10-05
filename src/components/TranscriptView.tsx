@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import { TranslatorService } from '../services/translator';
 import { Clay3DIcon } from './Clay3DIcon';
+import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { TranscriptWord, FlawType, Flaw } from '../types/speech';
 
 interface TranscriptViewProps {
@@ -339,18 +340,21 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({
   // If transcript is empty, show interactive Empty-State with paste action
   if (!transcript || transcript.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Clay3DIcon name="document" size="xs" withPedestal />
-            <h3 className="text-lg font-bold text-slate-900 font-heading">
-              Transcript Grounding (FR-9)
-            </h3>
+      <div className="card-clay card-clay-violet p-6 rounded-2xl relative overflow-hidden space-y-4">
+        <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-20" />
+
+        <div className="relative z-10 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Clay3DIcon name="document" size="xs" withPedestal />
+              <h3 className="text-lg font-bold text-slate-900 font-heading">
+                Transcript Grounding (FR-9)
+              </h3>
+            </div>
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
+              Acoustic-only Mode
+            </span>
           </div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
-            Acoustic-only Mode
-          </span>
-        </div>
 
         <div className="p-6 rounded-xl bg-slate-50/70 border border-dashed border-slate-300 text-center space-y-3">
           <div className="flex items-center justify-center">
@@ -411,14 +415,17 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({
             </div>
           )}
         </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="card-clay p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-white/80 space-y-4 sm:space-y-5 relative">
-      
-      {/* Header with Title & Stats */}
+    <div className="card-clay card-clay-violet p-4 sm:p-7 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-5 relative overflow-hidden">
+      <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-28" />
+
+      <div className="relative z-10 space-y-4 sm:space-y-5">
+        {/* Header with Title & Stats */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
         <div className="flex items-center space-x-3">
           <Clay3DIcon name="document" size="sm" floating />
@@ -1123,6 +1130,8 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({
           </div>
         </div>
       )}
+
+      </div>
 
     </div>
   );
