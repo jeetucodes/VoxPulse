@@ -7,7 +7,6 @@ import type { AnalysisResult, QnAMessage } from '../types/speech';
 import { HelpAssistantService } from '../services/helpAssistant';
 import { speechRecInstance } from '../services/speechRecognition';
 import { Clay3DIcon } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
 import { SAMPLE_SPEECHES } from '../services/sampleData';
 
 interface AskForHelpProps {
@@ -359,9 +358,6 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
           aria-modal="true"
           aria-label="VoxPulse Speech Assistant Chatbot"
         >
-          {/* Fluid water wave ripple at bottom */}
-          <WaterWaveDecoration color="rgba(139, 92, 246, 0.06)" height="h-28" />
-
           {/* Fullscreen Chatbot Top Header */}
           <header className="relative z-10 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs shrink-0">
             <div className="flex items-center space-x-3 sm:space-x-4">

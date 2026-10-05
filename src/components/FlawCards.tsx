@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Clock, BarChart2, Check, Sparkles, Volume2 } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { Flaw, FlawType } from '../types/speech';
 
 interface FlawCardsProps {
@@ -108,7 +107,6 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
   if (flaws.length === 0) {
     return (
       <div className="card-clay card-clay-emerald p-6 sm:p-8 text-center rounded-3xl relative overflow-hidden space-y-4 w-full min-w-0">
-        <WaterWaveDecoration color="rgba(16, 185, 129, 0.1)" height="h-20" />
         <div className="relative z-10 mx-auto flex justify-center">
           <Clay3DIcon name="trophy" size="xl" floating />
         </div>
@@ -153,8 +151,6 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
                   : 'hover:border-slate-300 shadow-clay-card'
               }`}
             >
-              <WaterWaveDecoration color={badge.waveColor} height="h-16" />
-              
               <div className="relative z-10 w-full min-w-0 flex flex-col">
                 
                 {/* Top Header Row: Category, Severity, Duration & Action Buttons */}

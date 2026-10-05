@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { Clay3DIcon } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { TimeSeriesPoint, Flaw } from '../types/speech';
 
 interface TimeSeriesChartProps {
@@ -129,8 +128,6 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
 
   return (
     <div className="card-clay card-clay-cyan p-6 sm:p-7 rounded-3xl space-y-5 relative overflow-hidden">
-      <WaterWaveDecoration color="rgba(6, 182, 212, 0.08)" height="h-28" />
-
       <div className="relative z-10 space-y-5">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

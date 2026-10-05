@@ -4,7 +4,6 @@ import {
 } from 'lucide-react';
 import { TranslatorService } from '../services/translator';
 import { Clay3DIcon } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
 import type { TranscriptWord, FlawType, Flaw } from '../types/speech';
 
 interface TranscriptViewProps {
@@ -341,8 +340,6 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({
   if (!transcript || transcript.length === 0) {
     return (
       <div className="card-clay card-clay-violet p-6 rounded-2xl relative overflow-hidden space-y-4">
-        <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-20" />
-
         <div className="relative z-10 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -422,8 +419,6 @@ export const TranscriptView: React.FC<TranscriptViewProps> = ({
 
   return (
     <div className="card-clay card-clay-violet p-4 sm:p-7 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-5 relative overflow-hidden">
-      <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-28" />
-
       <div className="relative z-10 space-y-4 sm:space-y-5">
         {/* Header with Title & Stats */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">

@@ -271,16 +271,40 @@ input[type="range"]::-webkit-slider-runnable-track {
   animation: pulseGlow 4s ease-in-out infinite;
 }
 
-/* Water Wave Fluid Animation Keyframes */
-@keyframes waterWaveShift {
-  0% { transform: translate3d(0, 0, 0) scaleY(1); }
-  50% { transform: translate3d(-25%, -2px, 0) scaleY(1.1); }
-  100% { transform: translate3d(-50%, 0, 0) scaleY(1); }
+/* Water Wave Fluid Animation Keyframes - Mathematically Seamless Infinite Flow */
+@keyframes waterWaveFlow {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
 }
 
-@keyframes waterWaveReverse {
-  0% { transform: translate3d(-50%, 0, 0) scaleY(1.05); }
-  50% { transform: translate3d(-25%, 3px, 0) scaleY(0.92); }
-  100% { transform: translate3d(0, 0, 0) scaleY(1.05); }
+@keyframes waterWaveCounter {
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
 }
+
+@keyframes waterWaveBob {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -3px, 0); }
+}
+
+.animate-wave-flow {
+  animation: waterWaveFlow 16s linear infinite;
+  will-change: transform;
+}
+
+.animate-wave-counter {
+  animation: waterWaveCounter 22s linear infinite;
+  will-change: transform;
+}
+
+.animate-wave-highlight {
+  animation: waterWaveFlow 11s linear infinite;
+  will-change: transform;
+}
+
+.animate-wave-bob {
+  animation: waterWaveBob 7s ease-in-out infinite;
+  will-change: transform;
+}
+
 

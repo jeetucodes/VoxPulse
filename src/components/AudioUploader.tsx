@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { LiveRecorderStudio } from './LiveRecorderStudio';
 import { Clay3DIcon, type Clay3DIconName } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
 import { SAMPLE_SPEECHES } from '../services/sampleData';
 import type { SampleSpeech } from '../types/speech';
 
@@ -211,7 +210,6 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
                 : 'border-slate-300 hover:border-violet-400'
             }`}
           >
-            <WaterWaveDecoration color="rgba(139, 92, 246, 0.08)" height="h-24" />
             <input
               ref={fileInputRef}
               type="file"
@@ -328,8 +326,6 @@ export const AudioUploader: React.FC<AudioUploaderProps> = ({
                   onClick={() => onSelectSample(sample)}
                   className={`relative p-6 rounded-3xl card-clay ${cardStyle.cardTheme} overflow-hidden hover:shadow-clay-card-hover hover:-translate-y-1.5 transition-all duration-200 cursor-pointer space-y-4 group`}
                 >
-                  <WaterWaveDecoration color={cardStyle.waveColor} height="h-16" />
-
                   <div className="relative z-10 space-y-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3.5">

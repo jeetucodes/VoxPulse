@@ -5,7 +5,6 @@ import {
   ArrowRight, Edit3, Mic, MicOff, Sparkles, Smartphone
 } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
-import { WaterWaveDecoration } from './WaterWaveDecoration';
 import { liveRecorderInstance } from '../services/liveRecorder';
 import { speechRecInstance } from '../services/speechRecognition';
 import { AudioAnalyzer } from '../services/audioAnalyzer';
@@ -259,8 +258,6 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
 
   return (
     <div className="w-full card-clay card-clay-violet p-7 sm:p-8 rounded-3xl relative overflow-hidden space-y-6">
-      <WaterWaveDecoration color="rgba(139, 92, 246, 0.09)" height="h-28" />
-
       <div className="relative z-10 space-y-6">
         {/* Corner Badge */}
         <div className="absolute top-0 right-0 hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-violet-100/90 border border-violet-200 text-violet-800 text-xs font-bold shadow-clay-pill">
