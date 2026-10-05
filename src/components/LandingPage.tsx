@@ -200,9 +200,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           >
             {/* Top Bar of Mockup */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200/90 text-white flex items-center justify-center p-0.5 shadow-xs">
-                  <img src="/app-icon.png" alt="App" className="w-full h-full object-contain rounded-lg" />
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 text-white flex items-center justify-center p-1 shadow-sm">
+                  <img src="/app-icon.png" alt="App" className="w-full h-full object-contain rounded-xl" />
                 </div>
                 <div>
                   <h3 className="font-heading font-black text-slate-900 text-base sm:text-lg flex items-center gap-2">
@@ -590,8 +590,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* ===================== FOOTER ===================== */}
       <footer className="border-t border-slate-200/80 pt-8 max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-lg bg-white border border-slate-200/90 p-0.5 shadow-xs flex items-center justify-center">
-            <img src="/app-icon.png" alt="VoxPulse" className="w-full h-full object-contain rounded" />
+          <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 p-1 shadow-xs flex items-center justify-center">
+            <img src="/app-icon.png" alt="VoxPulse" className="w-full h-full object-contain rounded-lg" />
           </div>
           <span className="font-heading font-black text-slate-800 text-sm">
             Vox<span className="text-violet-600">Pulse</span>

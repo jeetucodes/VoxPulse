@@ -68,22 +68,22 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="border-b border-slate-200/70 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-xs">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
         
         {/* Modern App Icon & Branding */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3.5">
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <div className="relative group cursor-pointer" onClick={handleLogoClick}>
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white shadow-clay-card flex items-center justify-center p-0.5 transition-all duration-300 group-hover:scale-105 border border-slate-200/90 relative overflow-hidden">
+            <div className="w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-2xl bg-white shadow-clay-card flex items-center justify-center p-1 transition-all duration-300 group-hover:scale-105 border border-slate-200/90 relative overflow-hidden">
               <img 
                 src="/app-icon.png" 
                 alt="VoxPulse App Icon" 
-                className="w-full h-full object-contain rounded-lg sm:rounded-xl"
+                className="w-full h-full object-contain rounded-xl"
               />
             </div>
             {/* Status Live Beacon */}
-            <span className="absolute -top-1 -right-1 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
+            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-emerald-500 border-2 border-white shadow-xs"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 bg-emerald-500 border-2 border-white shadow-xs"></span>
             </span>
           </div>
 
