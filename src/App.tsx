@@ -476,8 +476,8 @@ export function App() {
     </footer>
   )}
 
-      {/* Floating Speech Assistant (FR-6 & FR-8 Multi-Lingual Full-Screen Chatbot) - Only visible in studio/dashboard */}
-      {currentView === 'studio' && (
+      {/* Floating Speech Assistant (FR-6 & FR-8 Multi-Lingual Full-Screen Chatbot) - Only visible when analysisResult exists (hidden during recording/uploading) */}
+      {currentView === 'studio' && analysisResult && (
         <AskForHelp
           result={analysisResult}
           onSeek={handleSeek}

@@ -322,92 +322,114 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
       {/* ============================================================== */}
       {/* 1. FLOATING LAUNCHER BUTTON (Bottom Right - Mobile Friendly)    */}
       {/* ============================================================== */}
+      {/* ============================================================== */}
+      {/* 1. FLOATING LAUNCHER BUTTON (Prominent & Modern AI Coach Pill)  */}
+      {/* ============================================================== */}
       {!isChatOpen && (
         <button
           onClick={() => {
             setIsChatOpen(true);
             setTimeout(() => inputRef.current?.focus(), 150);
           }}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-violet-600 hover:bg-violet-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-white flex items-center justify-center cursor-pointer select-none group"
+          className="fixed bottom-5 right-4 sm:bottom-7 sm:right-7 z-40 p-2 sm:px-5 sm:py-3 rounded-full bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white shadow-2xl hover:shadow-violet-500/35 hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-white/90 flex items-center gap-3 cursor-pointer select-none group"
           title="Ask Speech Coach AI"
           aria-label="Open Speech Coach Chatbot"
         >
-          <div className="relative flex items-center justify-center">
-            <Clay3DIcon name="robot" size="xs" />
+          <div className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur-xs shrink-0">
+            <Clay3DIcon name="robot" size="sm" floating />
             {/* Live Green Online Beacon */}
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-80"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border border-white"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white"></span>
             </span>
           </div>
+
+          <div className="text-left hidden xs:block pr-1">
+            <div className="flex items-center gap-1.5">
+              <span className="block text-xs sm:text-sm font-black tracking-tight leading-tight font-heading">
+                Speech Coach AI
+              </span>
+              <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-white/20 text-white border border-white/30 uppercase tracking-wider">
+                Live
+              </span>
+            </div>
+            <span className="block text-[11px] text-violet-100 font-medium">
+              Ask about your score & drills
+            </span>
+          </div>
+
+          <span className="hidden sm:inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-extrabold uppercase tracking-wider border border-white/30 group-hover:bg-white group-hover:text-violet-700 transition-colors">
+            Ask AI
+          </span>
         </button>
       )}
 
       {/* ============================================================== */}
-      {/* 2. CHATBOT WINDOW (Full-screen Mobile + Elegant Desktop Modal) */}
+      {/* 2. CHATBOT WINDOW (Full-screen Mobile + Expanded Desktop Modal) */}
       {/* ============================================================== */}
       {isChatOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-xs animate-fade-in"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-xs animate-fade-in p-0 sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-label="VoxPulse Speech Assistant Chatbot"
         >
-          {/* Chat Window Container: Full screen on mobile, Boxed / Expandable on Desktop */}
+          {/* Chat Window Container: Full screen on mobile, Spacious on Desktop */}
           <div 
             className={`w-full flex flex-col bg-white shadow-2xl transition-all duration-300 overflow-hidden ${
               isFullScreen
                 ? 'fixed inset-0 h-[100dvh] rounded-none'
-                : 'h-[100dvh] sm:h-[85vh] sm:max-h-[720px] sm:max-w-2xl sm:rounded-2xl sm:border sm:border-slate-200'
+                : 'h-[100dvh] sm:h-[88vh] sm:max-h-[820px] sm:max-w-3xl lg:max-w-4xl sm:rounded-3xl sm:border sm:border-slate-200/90'
             }`}
           >
             {/* Header */}
-            <header className="w-full border-b border-slate-200 bg-white px-3 sm:px-5 py-3 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <header className="w-full border-b border-slate-200/90 bg-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0 shadow-xs">
+              <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                 {/* Mobile Back Button */}
                 <button
                   onClick={() => setIsChatOpen(false)}
-                  className="sm:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer"
+                  className="sm:hidden p-1.5 rounded-xl text-slate-500 hover:bg-slate-100 cursor-pointer"
                   title="Close chat"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
 
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-violet-50 text-violet-700 border border-violet-100 flex items-center justify-center p-1.5 shrink-0 relative">
-                  <Clay3DIcon name="robot" size="xs" />
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white"></span>
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 text-violet-700 border border-violet-200 flex items-center justify-center p-1 shrink-0 relative shadow-xs">
+                  <Clay3DIcon name="robot" size="sm" />
+                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white"></span>
                 </div>
 
                 <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <h2 className="font-heading font-black text-slate-900 text-sm sm:text-base tracking-tight truncate">
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-heading font-black text-slate-900 text-base sm:text-lg tracking-tight truncate">
                       Speech Coach AI
                     </h2>
-                    <span className="hidden min-[400px]:inline-block text-[9px] font-bold px-1.5 py-0.2 rounded bg-violet-50 text-violet-700 border border-violet-200">
+                    <span className="inline-block text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800 border border-violet-200 uppercase tracking-wider">
                       Bilingual
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 truncate">
-                    {detectedLanguage === 'hi' ? 'हिंदी में सक्रिय' : detectedLanguage === 'hinglish' ? 'Hinglish Mode' : 'English & Hindi'}
+                  <p className="text-xs text-slate-500 truncate flex items-center gap-1.5 pt-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span>{detectedLanguage === 'hi' ? 'हिंदी में सक्रिय (Bilingual Active)' : detectedLanguage === 'hinglish' ? 'Hinglish & English Active' : 'English & Hindi Active'}</span>
                   </p>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   onClick={handleResetChat}
-                  className="p-2 sm:px-2.5 sm:py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-slate-200/80"
                   title="New Conversation"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">New</span>
+                  <span className="hidden sm:inline">New Chat</span>
                 </button>
 
                 {/* Desktop Fullscreen toggle */}
                 <button
                   onClick={() => setIsFullScreen(!isFullScreen)}
-                  className="hidden sm:flex p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="hidden sm:flex p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors cursor-pointer border border-slate-200/80"
                   title={isFullScreen ? 'Minimize window' : 'Full-screen'}
                 >
                   {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -416,7 +438,7 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                 {/* Close Button */}
                 <button
                   onClick={() => setIsChatOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors cursor-pointer border border-slate-200/80"
                   title="Close (Esc)"
                 >
                   <X className="w-5 h-5" />
@@ -425,9 +447,9 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
             </header>
 
             {/* Quick Inquiry Chips Strip (Touch-scrollable on mobile) */}
-            <div className="w-full bg-slate-50 border-b border-slate-200/70 px-3 sm:px-4 py-2 overflow-x-auto no-scrollbar shrink-0">
-              <div className="flex items-center gap-1.5 whitespace-nowrap">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1 pr-1">
+            <div className="w-full bg-slate-50/80 border-b border-slate-200/80 px-4 sm:px-6 py-2.5 overflow-x-auto no-scrollbar shrink-0">
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0 flex items-center gap-1 pr-1">
                   <Sparkles className="w-3 h-3 text-amber-500" />
                   Quick:
                 </span>
@@ -445,7 +467,7 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
             </div>
 
             {/* Chat Messages Stream */}
-            <div className="flex-1 overflow-y-auto w-full px-3 sm:px-5 py-4 space-y-3.5 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto w-full px-4 sm:px-6 py-5 space-y-4 bg-slate-50/70">
               {messages.map((msg) => {
                 const isUser = msg.sender === 'user';
                 const isSpeaking = speakingMessageId === msg.id;
@@ -454,19 +476,19 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                 return (
                   <div
                     key={msg.id}
-                    className={`flex items-start gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
+                    className={`flex items-start gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
                   >
                     {!isUser && (
-                      <div className="w-7 h-7 rounded-lg bg-violet-50 text-violet-700 border border-violet-100 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-violet-100 text-violet-700 border border-violet-200 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                         <Clay3DIcon name="robot" size="xs" />
                       </div>
                     )}
 
                     <div
-                      className={`max-w-[88%] sm:max-w-[82%] rounded-2xl p-3.5 sm:p-4 text-xs sm:text-sm shadow-xs transition-all ${
+                      className={`max-w-[88%] sm:max-w-[84%] rounded-2xl p-4 sm:p-5 text-sm sm:text-[15px] shadow-xs transition-all leading-relaxed ${
                         isUser
-                          ? 'bg-violet-600 text-white rounded-tr-xs'
-                          : 'bg-white border border-slate-200 text-slate-900 rounded-tl-xs'
+                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-tr-xs shadow-md font-medium'
+                          : 'bg-white border border-slate-200/90 text-slate-900 rounded-tl-xs shadow-sm'
                       }`}
                     >
                       {/* Message Content */}
@@ -480,22 +502,22 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
 
                       {/* Assistant Actions Bar: Copy, Voice Readout, Seek button */}
                       {!isUser && (
-                        <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-1.5 text-xs">
-                          <div className="flex items-center gap-1">
+                        <div className="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <div className="flex items-center gap-1.5">
                             {/* Copy button */}
                             <button
                               onClick={() => handleCopyText(msg.id, msg.text)}
-                              className="px-2 py-0.5 rounded-md bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 text-[10px] sm:text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
                               title="Copy answer"
                             >
                               {isCopied ? (
                                 <>
-                                  <Check className="w-3 h-3 text-emerald-600" />
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
                                   <span className="text-emerald-700">Copied</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3 h-3" />
+                                  <Copy className="w-3.5 h-3.5" />
                                   <span>Copy</span>
                                 </>
                               )}
@@ -504,7 +526,7 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                             {/* Voice TTS Button */}
                             <button
                               onClick={() => toggleTextToSpeech(msg)}
-                              className={`px-2 py-0.5 rounded-md border text-[10px] sm:text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
+                              className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer ${
                                 isSpeaking
                                   ? 'bg-violet-600 text-white border-violet-600 animate-pulse'
                                   : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
@@ -513,12 +535,12 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                             >
                               {isSpeaking ? (
                                 <>
-                                  <VolumeX className="w-3 h-3" />
+                                  <VolumeX className="w-3.5 h-3.5" />
                                   <span>Stop</span>
                                 </>
                               ) : (
                                 <>
-                                  <Volume2 className="w-3 h-3 text-violet-600" />
+                                  <Volume2 className="w-3.5 h-3.5 text-violet-600" />
                                   <span>Listen</span>
                                 </>
                               )}
@@ -532,10 +554,10 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                                 onSeek(msg.suggestedAction!.time!);
                                 setIsChatOpen(false);
                               }}
-                              className="px-2 py-0.5 rounded-md bg-violet-50 text-violet-800 hover:bg-violet-100 border border-violet-200 text-[10px] sm:text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-violet-50 text-violet-800 hover:bg-violet-100 border border-violet-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                               title="Jump to flaw in audio player"
                             >
-                              <Clock className="w-3 h-3" />
+                              <Clock className="w-3.5 h-3.5 text-violet-600" />
                               <span>Jump to {HelpAssistantService.formatTime(msg.suggestedAction.time!)}</span>
                             </button>
                           )}
@@ -548,11 +570,11 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
 
               {/* Responding animation indicator */}
               {isResponding && (
-                <div className="flex items-center gap-2 text-xs text-slate-500 italic pl-9">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-600 animate-pulse"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-600 animate-pulse delay-75"></span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-600 animate-pulse delay-150"></span>
-                  <span className="ml-1 text-[11px]">Coach is preparing guidance...</span>
+                <div className="flex items-center gap-2 text-xs text-slate-500 italic pl-10">
+                  <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></span>
+                  <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse delay-75"></span>
+                  <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse delay-150"></span>
+                  <span className="ml-1 text-xs">Coach is preparing guidance...</span>
                 </div>
               )}
 
@@ -561,20 +583,20 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
 
             {/* Voice Error notice if any */}
             {voiceError && (
-              <div className="text-[11px] text-rose-800 bg-rose-50 border-t border-rose-200 px-3 py-1.5 font-medium flex items-center justify-between shrink-0">
+              <div className="text-xs text-rose-800 bg-rose-50 border-t border-rose-200 px-4 py-2 font-medium flex items-center justify-between shrink-0">
                 <span>{voiceError}</span>
                 <button onClick={() => setVoiceError(null)} className="underline ml-2 font-bold cursor-pointer">Dismiss</button>
               </div>
             )}
 
             {/* Bottom Prompt Input Bar (Mobile-safe with keyboard padding) */}
-            <footer className="w-full border-t border-slate-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3 shrink-0 pb-[max(0.65rem,env(safe-area-inset-bottom))]">
+            <footer className="w-full border-t border-slate-200/90 bg-white px-4 sm:px-6 py-3.5 sm:py-4 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-xs">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSendMessage();
                 }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2.5"
               >
                 <div className="relative flex-1">
                   <input
@@ -587,7 +609,7 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                         ? '🎙️ Listening... (Speak in Hindi or English)'
                         : 'Ask about pauses, pacing, or drills...'
                     }
-                    className={`w-full py-2.5 sm:py-3 pl-3 sm:pl-4 pr-10 text-sm font-medium rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all ${
+                    className={`w-full py-3 sm:py-3.5 pl-4 sm:pl-5 pr-12 text-sm sm:text-base font-medium rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all ${
                       isListening ? 'border-rose-400 bg-rose-50/30' : ''
                     }`}
                   />
@@ -597,7 +619,7 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                     <button
                       type="button"
                       onClick={toggleVoiceRecording}
-                      className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-all cursor-pointer ${
+                      className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all cursor-pointer ${
                         isListening
                           ? 'bg-rose-500 text-white animate-pulse'
                           : 'text-slate-400 hover:text-violet-600 hover:bg-slate-200/60'
@@ -613,17 +635,17 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
                 <button
                   type="submit"
                   disabled={!inputText.trim()}
-                  className="w-10 h-10 sm:w-auto sm:px-4 sm:py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs sm:text-sm shadow-xs disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                  className="h-11 sm:h-12 px-4 sm:px-5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition-all shrink-0 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
                   title="Send message"
                 >
                   <span className="hidden sm:inline">Send</span>
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-4 h-4" />
                 </button>
               </form>
 
-              <div className="hidden sm:flex items-center justify-between text-[10px] text-slate-400 font-medium px-1 pt-1.5">
+              <div className="hidden sm:flex items-center justify-between text-xs text-slate-400 font-medium px-1 pt-2">
                 <span>Hindi, Hinglish & English Supported</span>
-                <span>Press <kbd className="px-1 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-500 font-mono text-[9px]">Esc</kbd> to exit</span>
+                <span>Press <kbd className="px-1.5 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-500 font-mono text-[10px]">Esc</kbd> to exit</span>
               </div>
             </footer>
           </div>
