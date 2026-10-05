@@ -37,57 +37,62 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
         return {
           icon: <Clay3DIcon name="rocket" size="md" withPedestal />,
           label: 'Fast Cadence',
-          badgeClass: 'bg-pink-100/90 text-pink-800 border-pink-200',
-          activeRing: 'ring-2 ring-pink-500 border-pink-300',
-          cardTheme: 'card-clay-pink',
+          badgeClass: 'bg-pink-200/90 text-pink-900 border-pink-300',
+          activeRing: 'ring-2 ring-pink-500 border-pink-400',
+          cardTheme: 'sticky-pink',
+          tilt: 'sm:-rotate-[0.5deg]',
           waveColor: 'rgba(244, 63, 94, 0.08)',
-          calloutBorder: 'border-l-4 border-l-pink-500 border-pink-200/80 bg-pink-50/60',
-          calloutTitle: 'text-pink-800',
+          calloutBorder: 'border-l-4 border-l-pink-500 border-pink-300/80 bg-white/75',
+          calloutTitle: 'text-pink-900',
         };
       case 'unnatural_pause':
         return {
           icon: <Clay3DIcon name="clock" size="md" withPedestal />,
           label: 'Unnatural Pause',
-          badgeClass: 'bg-amber-100/90 text-amber-800 border-amber-200',
-          activeRing: 'ring-2 ring-amber-500 border-amber-300',
-          cardTheme: 'card-clay-amber',
+          badgeClass: 'bg-amber-200/90 text-amber-900 border-amber-300',
+          activeRing: 'ring-2 ring-amber-500 border-amber-400',
+          cardTheme: 'sticky-yellow',
+          tilt: 'sm:rotate-[0.5deg]',
           waveColor: 'rgba(245, 158, 11, 0.08)',
-          calloutBorder: 'border-l-4 border-l-amber-500 border-amber-200/80 bg-amber-50/60',
-          calloutTitle: 'text-amber-800',
+          calloutBorder: 'border-l-4 border-l-amber-500 border-amber-300/80 bg-white/75',
+          calloutTitle: 'text-amber-900',
         };
       case 'mumbling':
         return {
           icon: <Clay3DIcon name="mic" size="md" withPedestal />,
           label: 'Muffled Articulation',
-          badgeClass: 'bg-emerald-100/90 text-emerald-800 border-emerald-200',
-          activeRing: 'ring-2 ring-emerald-500 border-emerald-300',
-          cardTheme: 'card-clay-emerald',
+          badgeClass: 'bg-emerald-200/90 text-emerald-900 border-emerald-300',
+          activeRing: 'ring-2 ring-emerald-500 border-emerald-400',
+          cardTheme: 'sticky-green',
+          tilt: 'sm:-rotate-[0.5deg]',
           waveColor: 'rgba(16, 185, 129, 0.08)',
-          calloutBorder: 'border-l-4 border-l-emerald-500 border-emerald-200/80 bg-emerald-50/60',
-          calloutTitle: 'text-emerald-800',
+          calloutBorder: 'border-l-4 border-l-emerald-500 border-emerald-300/80 bg-white/75',
+          calloutTitle: 'text-emerald-900',
         };
       case 'monotone_pitch':
         return {
           icon: <Clay3DIcon name="target" size="md" withPedestal />,
           label: 'Monotone Pitch',
-          badgeClass: 'bg-violet-100/90 text-violet-800 border-violet-200',
-          activeRing: 'ring-2 ring-violet-500 border-violet-300',
-          cardTheme: 'card-clay-violet',
+          badgeClass: 'bg-violet-200/90 text-violet-900 border-violet-300',
+          activeRing: 'ring-2 ring-violet-500 border-violet-400',
+          cardTheme: 'sticky-purple',
+          tilt: 'sm:rotate-[0.5deg]',
           waveColor: 'rgba(139, 92, 246, 0.08)',
-          calloutBorder: 'border-l-4 border-l-violet-500 border-violet-200/80 bg-violet-50/60',
-          calloutTitle: 'text-violet-800',
+          calloutBorder: 'border-l-4 border-l-violet-500 border-violet-300/80 bg-white/75',
+          calloutTitle: 'text-violet-900',
         };
       case 'volume_drop':
       default:
         return {
           icon: <Clay3DIcon name="speaker" size="md" withPedestal />,
           label: 'Volume Drop',
-          badgeClass: 'bg-rose-100/90 text-rose-800 border-rose-200',
-          activeRing: 'ring-2 ring-rose-500 border-rose-300',
-          cardTheme: 'card-clay-pink',
+          badgeClass: 'bg-orange-200/90 text-orange-900 border-orange-300',
+          activeRing: 'ring-2 ring-orange-500 border-orange-400',
+          cardTheme: 'sticky-peach',
+          tilt: 'sm:-rotate-[0.5deg]',
           waveColor: 'rgba(244, 63, 94, 0.08)',
-          calloutBorder: 'border-l-4 border-l-rose-500 border-rose-200/80 bg-rose-50/60',
-          calloutTitle: 'text-rose-800',
+          calloutBorder: 'border-l-4 border-l-orange-500 border-orange-300/80 bg-white/75',
+          calloutTitle: 'text-orange-900',
         };
     }
   };
@@ -106,12 +111,13 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
 
   if (flaws.length === 0) {
     return (
-      <div className="card-clay card-clay-emerald p-6 sm:p-8 text-center rounded-3xl relative overflow-hidden space-y-4 w-full min-w-0">
+      <div className="sticky-note sticky-green p-6 sm:p-8 text-center rounded-3xl relative overflow-hidden space-y-4 w-full min-w-0 shadow-clay-card">
+        <div className="sticky-tape !w-24 !h-5 !-top-2.5"></div>
         <div className="relative z-10 mx-auto flex justify-center">
           <Clay3DIcon name="trophy" size="xl" floating />
         </div>
         <h3 className="relative z-10 text-xl font-black text-slate-900 font-heading">Zero Delivery Flaws Detected! 🎉</h3>
-        <p className="relative z-10 text-xs sm:text-sm text-slate-600 font-medium max-w-md mx-auto leading-relaxed break-words">
+        <p className="relative z-10 text-xs sm:text-sm text-slate-700 font-medium max-w-md mx-auto leading-relaxed break-words">
           Your delivery rhythm, pause distribution, and vocal articulation align within 95% of national competition benchmark standards.
         </p>
       </div>
@@ -145,16 +151,19 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
           return (
             <div
               key={flaw.id}
-              className={`card-clay ${badge.cardTheme} transition-all duration-300 relative overflow-hidden w-full min-w-0 rounded-2xl sm:rounded-3xl border border-slate-200/80 ${
+              className={`sticky-note ${badge.cardTheme} ${badge.tilt} transition-all duration-300 relative w-full min-w-0 rounded-2xl sm:rounded-3xl shadow-clay-card ${
                 isActive 
-                  ? `${badge.activeRing} shadow-clay-card-hover scale-[1.01]` 
-                  : 'hover:border-slate-300 shadow-clay-card'
+                  ? `${badge.activeRing} scale-[1.01] z-10 shadow-lg` 
+                  : 'hover:border-slate-400'
               }`}
             >
+              {/* Top Washi Tape Strip */}
+              <div className="sticky-tape !w-16 !h-4 !-top-2"></div>
+
               <div className="relative z-10 w-full min-w-0 flex flex-col">
                 
                 {/* Top Header Row: Category, Severity, Duration & Action Buttons */}
-                <div className="p-4 sm:p-5 pb-3 sm:pb-3.5 border-b border-slate-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full min-w-0">
+                <div className="p-4 sm:p-5 pb-3 sm:pb-3.5 border-b border-black/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 w-full min-w-0">
                   
                   {/* Left: 3D Icon & Title Tags */}
                   <div className="flex items-center gap-3 sm:gap-3.5 min-w-0 flex-1">
@@ -175,10 +184,10 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
                       {/* Timestamp Tag */}
                       <div className="flex items-center gap-2 text-xs font-mono font-semibold text-slate-700 pt-0.5 flex-wrap">
                         <Clock className="w-3.5 h-3.5 text-violet-600 shrink-0" />
-                        <span className="bg-white/90 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200 font-bold text-[11px] sm:text-xs">
+                        <span className="bg-white/90 text-slate-800 px-2 py-0.5 rounded-md border border-slate-300/80 font-bold text-[11px] sm:text-xs shadow-xs">
                           {formatTime(flaw.start)} – {formatTime(flaw.end)}
                         </span>
-                        <span className="text-slate-500 font-sans font-medium text-[11px]">
+                        <span className="text-slate-600 font-sans font-medium text-[11px]">
                           ({(flaw.end - flaw.start).toFixed(1)}s duration)
                         </span>
                       </div>
@@ -198,7 +207,7 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
 
                     <button
                       onClick={() => toggleExpand(flaw.id)}
-                      className="p-1.5 sm:p-2 rounded-xl border border-slate-200 bg-white/90 hover:bg-white text-slate-600 hover:text-slate-900 transition-all shadow-clay-pill active:scale-95"
+                      className="p-1.5 sm:p-2 rounded-xl border border-slate-300/80 bg-white/90 hover:bg-white text-slate-700 hover:text-slate-900 transition-all shadow-clay-pill active:scale-95"
                       title={isExpanded ? 'Collapse improvement tips' : 'Expand how to improve'}
                       aria-label={isExpanded ? 'Collapse improvement tips' : 'Expand how to improve'}
                     >
@@ -224,7 +233,7 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
                   {(flaw.measuredValue || flaw.baselineValue) && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-0.5 w-full min-w-0">
                       {flaw.measuredValue && (
-                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/80 border border-pink-200/80 shadow-clay-pill flex items-center gap-2.5 min-w-0">
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/85 border border-pink-300/80 shadow-clay-pill flex items-center gap-2.5 min-w-0">
                           <div className="w-8 h-8 rounded-lg bg-pink-100 text-pink-700 flex items-center justify-center shrink-0">
                             <BarChart2 className="w-4 h-4" />
                           </div>
@@ -238,7 +247,7 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
                       )}
 
                       {flaw.baselineValue && (
-                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/80 border border-emerald-200/80 shadow-clay-pill flex items-center gap-2.5 min-w-0">
+                        <div className="p-2.5 sm:p-3 rounded-xl bg-white/85 border border-emerald-300/80 shadow-clay-pill flex items-center gap-2.5 min-w-0">
                           <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                             <Sparkles className="w-4 h-4 text-emerald-600" />
                           </div>
@@ -257,7 +266,7 @@ export const FlawCards: React.FC<FlawCardsProps> = ({
                 {/* Expandable "How to Improve" Drawer (FR-5) */}
                 {isExpanded && (
                   <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0 w-full min-w-0">
-                    <div className="clay-inset-well p-4 sm:p-4.5 space-y-3.5 animate-fade-in w-full min-w-0 rounded-2xl">
+                    <div className="bg-white/80 border border-slate-300/80 p-4 sm:p-4.5 space-y-3.5 animate-fade-in w-full min-w-0 rounded-2xl shadow-inner">
                       <div className="flex items-center gap-2 text-xs font-bold text-violet-700 uppercase tracking-wider font-heading">
                         <Clay3DIcon name="bulb" size="xs" />
                         <span>Prescriptive Guidance & Action Steps</span>

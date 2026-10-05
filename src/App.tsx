@@ -408,8 +408,9 @@ export function App() {
             </div>
 
 
-            {/* Change Speech / Try Another Sample Banner */}
-            <div className="card-clay p-5 sm:p-6 rounded-3xl border border-white/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-semibold text-slate-700">
+            {/* Change Speech / Try Another Sample Banner (Sticky Note Memo) */}
+            <div className="sticky-note-board sticky-yellow p-5 sm:p-6 rounded-3xl border border-amber-300/80 shadow-clay-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-semibold text-slate-700 relative overflow-hidden">
+              <div className="sticky-tape !w-20 !h-5 !-top-2.5"></div>
               <div className="flex items-center gap-3">
                 <Clay3DIcon name="candy" size="sm" withPedestal floating />
                 <div>

@@ -127,7 +127,11 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
   const playheadX = getX(currentTime);
 
   return (
-    <div className="card-clay card-clay-cyan p-6 sm:p-7 rounded-3xl space-y-5 relative overflow-hidden">
+    <div className="sticky-note-board sticky-blue p-6 sm:p-7 rounded-3xl space-y-5 relative overflow-hidden border border-sky-300/80 shadow-clay-card">
+      {/* Top Dual Washi Tape Strips for Authentic Sticky Note Aesthetic */}
+      <div className="sticky-tape sticky-tape-left !w-20 !h-5 !-top-2.5"></div>
+      <div className="sticky-tape sticky-tape-right !w-20 !h-5 !-top-2.5"></div>
+
       <div className="relative z-10 space-y-5">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -138,18 +142,18 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
               <h3 className="text-lg sm:text-xl font-black text-slate-900 font-heading tracking-tight">
                 Time-Series Contrastive Overlay
               </h3>
-              <span className="px-2.5 py-0.5 rounded-full bg-violet-100/70 border border-violet-200 text-violet-800 text-[10px] font-bold uppercase shadow-sm">
+              <span className="px-2.5 py-0.5 rounded-full bg-sky-100/90 border border-sky-300 text-sky-900 text-[10px] font-bold uppercase shadow-sm">
                 FR-7
               </span>
             </div>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-slate-600 font-medium">
               Synchronized acoustic curves contrasted against champion reference baselines
             </p>
           </div>
         </div>
 
         {/* Metric Selector Pills */}
-        <div className="clay-inset-well p-1 rounded-2xl flex items-center gap-1 self-start sm:self-auto">
+        <div className="bg-white/80 border border-sky-200/90 shadow-sm p-1 rounded-2xl flex items-center gap-1 self-start sm:self-auto backdrop-blur-xs">
           <button
             onClick={() => setMetricMode('rate')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
@@ -220,7 +224,7 @@ export const TimeSeriesChart: React.FC<TimeSeriesChartProps> = ({
       </div>
 
       {/* SVG Chart Container */}
-      <div className="w-full overflow-hidden rounded-2xl clay-inset-well p-3 sm:p-4">
+      <div className="w-full overflow-hidden rounded-2xl bg-white/90 border border-sky-200/90 p-3 sm:p-4 shadow-inner">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="w-full h-auto cursor-crosshair select-none"

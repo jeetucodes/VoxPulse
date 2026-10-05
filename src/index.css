@@ -464,6 +464,61 @@ input[type="range"]::-webkit-slider-runnable-track {
   border: 1px solid #5EEAD4;
 }
 
+/* Board / Large Dashboard Container Variation (Smooth without jarring scale) */
+.sticky-note-board {
+  position: relative;
+  border-radius: 24px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  box-shadow: 
+    0 12px 30px -6px rgba(15, 23, 42, 0.08),
+    0 4px 12px -2px rgba(15, 23, 42, 0.04),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.sticky-note-board::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 24px 24px;
+  border-color: transparent transparent rgba(0, 0, 0, 0.08) transparent;
+  border-bottom-right-radius: 24px;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.sticky-note-board:hover {
+  box-shadow: 
+    0 20px 38px -8px rgba(15, 23, 42, 0.12),
+    0 8px 16px -4px rgba(15, 23, 42, 0.06);
+}
+
+.sticky-pin-blue {
+  background: radial-gradient(circle at 35% 35%, #38BDF8 0%, #0284C7 70%, #0369A1 100%);
+}
+.sticky-pin-emerald {
+  background: radial-gradient(circle at 35% 35%, #34D399 0%, #059669 70%, #065F46 100%);
+}
+.sticky-pin-amber {
+  background: radial-gradient(circle at 35% 35%, #FBBF24 0%, #D97706 70%, #92400E 100%);
+}
+.sticky-pin-purple {
+  background: radial-gradient(circle at 35% 35%, #C084FC 0%, #7C3AED 70%, #5B21B6 100%);
+}
+
+.sticky-tape-left {
+  left: 36px !important;
+  transform: rotate(-3deg) !important;
+}
+.sticky-tape-right {
+  left: auto !important;
+  right: 36px !important;
+  transform: rotate(3deg) !important;
+}
+
 /* Animated Text Gradient Shine */
 @keyframes textShine {
   0% { background-position: 0% 50%; }
@@ -766,6 +821,8 @@ input[type="range"]::-webkit-slider-runnable-track {
   50% {
     transform: translate3d(-10px, 15px, 0) scale(0.97, 1.03);
   }
+}
+
 /* Seamless Giant Single Hero Bubble (Continuous 60fps Loop, Zero Jitter/Snap) */
 .giant-hero-bubble {
   position: absolute;

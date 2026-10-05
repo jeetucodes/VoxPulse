@@ -67,8 +67,11 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
-      {/* Primary Circular Gauge Card (Claymorphic 3D with Ambient Water Waves) */}
-      <div className="lg:col-span-5 card-clay card-clay-violet p-7 flex flex-col items-center justify-center relative overflow-hidden space-y-4">
+      {/* Primary Circular Gauge Card (Sticky Note Style with Washi Tape & Waves) */}
+      <div className="lg:col-span-5 sticky-note sticky-purple p-7 flex flex-col items-center justify-center relative overflow-hidden space-y-4 shadow-clay-card sm:rotate-[-0.5deg]">
+        
+        {/* Top Washi Tape Strip */}
+        <div className="sticky-tape !w-24 !h-5 !-top-2.5"></div>
         
         {/* Animated Water Wave at Bottom */}
         <WaterWaveDecoration color="rgba(139, 92, 246, 0.12)" height="h-24 sm:h-28" />
@@ -328,16 +331,17 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
         </div>
 
         {/* ============================================================== */}
-        {/* DESKTOP VIEW (>= 640px): ORIGINAL 2-COLUMN SPACIOUS CARDS      */}
+        {/* DESKTOP VIEW (>= 640px): 2-COLUMN STICKY NOTES                */}
         {/* ============================================================== */}
         <div className="hidden sm:grid sm:grid-cols-2 gap-4">
           
-          {/* Card 1: Pacing & Cadence (Soft Violet Glow) */}
-          <div className="card-clay card-clay-violet p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
+          {/* Card 1: Pacing & Cadence (Sticky Note Purple) */}
+          <div className="sticky-note sticky-purple -rotate-1 p-5 flex flex-col justify-between space-y-3 relative overflow-hidden shadow-clay-card">
+            <div className="sticky-tape !w-14 !h-4 !-top-2"></div>
             <WaterWaveDecoration color="rgba(139, 92, 246, 0.09)" height="h-16" />
             <div className="relative z-10 flex items-center justify-between text-xs">
               <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-violet-50 border border-violet-200 shadow-clay-card flex items-center justify-center shrink-0 text-violet-700">
+                <div className="w-10 h-10 rounded-2xl bg-white/90 border border-violet-200 shadow-clay-card flex items-center justify-center shrink-0 text-violet-700">
                   <Clock className="w-5 h-5 stroke-[2.5]" />
                 </div>
                 <div>
@@ -345,11 +349,11 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                   <span className="text-[10px] text-slate-500 font-normal">Syllables per second</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-sm bg-violet-100/80 text-violet-800 px-2.5 py-1 rounded-xl border border-violet-200/90 shadow-clay-pill">
+              <span className="font-black text-slate-900 text-sm bg-white/95 text-violet-800 px-2.5 py-1 rounded-xl border border-violet-200/90 shadow-clay-pill">
                 {breakdown.pacing}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-violet-200/70 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-violet-500 to-indigo-600 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.pacing}%` }}
@@ -363,12 +367,13 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
             </div>
           </div>
 
-          {/* Card 2: Fluency & Flow (Soft Rose/Pink Glow) */}
-          <div className="card-clay card-clay-pink p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
+          {/* Card 2: Fluency & Flow (Sticky Note Pink) */}
+          <div className="sticky-note sticky-pink rotate-1 p-5 flex flex-col justify-between space-y-3 relative overflow-hidden shadow-clay-card">
+            <div className="sticky-tape !w-14 !h-4 !-top-2"></div>
             <WaterWaveDecoration color="rgba(244, 63, 94, 0.08)" height="h-16" />
             <div className="relative z-10 flex items-center justify-between text-xs">
               <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-pink-50 border border-pink-200 shadow-clay-card flex items-center justify-center shrink-0 text-rose-600">
+                <div className="w-10 h-10 rounded-2xl bg-white/90 border border-pink-200 shadow-clay-card flex items-center justify-center shrink-0 text-rose-600">
                   <Zap className="w-5 h-5 fill-current stroke-[2.5]" />
                 </div>
                 <div>
@@ -376,11 +381,11 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                   <span className="text-[10px] text-slate-500 font-normal">Silence & pause ratio</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-sm bg-rose-100/80 text-rose-800 px-2.5 py-1 rounded-xl border border-rose-200/90 shadow-clay-pill">
+              <span className="font-black text-slate-900 text-sm bg-white/95 text-rose-800 px-2.5 py-1 rounded-xl border border-rose-200/90 shadow-clay-pill">
                 {breakdown.fluency}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-pink-200/70 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.fluency}%` }}
@@ -394,12 +399,13 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
             </div>
           </div>
 
-          {/* Card 3: Articulation (Soft Emerald Glow) */}
-          <div className="card-clay card-clay-emerald p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
+          {/* Card 3: Articulation (Sticky Note Green) */}
+          <div className="sticky-note sticky-green -rotate-1 p-5 flex flex-col justify-between space-y-3 relative overflow-hidden shadow-clay-card">
+            <div className="sticky-tape !w-14 !h-4 !-top-2"></div>
             <WaterWaveDecoration color="rgba(16, 185, 129, 0.09)" height="h-16" />
             <div className="relative z-10 flex items-center justify-between text-xs">
               <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-emerald-50 border border-emerald-200 shadow-clay-card flex items-center justify-center shrink-0 text-emerald-600">
+                <div className="w-10 h-10 rounded-2xl bg-white/90 border border-emerald-200 shadow-clay-card flex items-center justify-center shrink-0 text-emerald-600">
                   <Mic className="w-5 h-5 stroke-[2.5]" />
                 </div>
                 <div>
@@ -407,11 +413,11 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                   <span className="text-[10px] text-slate-500 font-normal">Spectral clarity & formants</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-sm bg-emerald-100/80 text-emerald-800 px-2.5 py-1 rounded-xl border border-emerald-200/90 shadow-clay-pill">
+              <span className="font-black text-slate-900 text-sm bg-white/95 text-emerald-800 px-2.5 py-1 rounded-xl border border-emerald-200/90 shadow-clay-pill">
                 {breakdown.articulation}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-emerald-200/70 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.articulation}%` }}
@@ -425,12 +431,13 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
             </div>
           </div>
 
-          {/* Card 4: Dynamic Expression (Soft Amber Glow) */}
-          <div className="card-clay card-clay-amber p-5 flex flex-col justify-between space-y-3 relative overflow-hidden">
+          {/* Card 4: Dynamic Expression (Sticky Note Yellow) */}
+          <div className="sticky-note sticky-yellow rotate-1 p-5 flex flex-col justify-between space-y-3 relative overflow-hidden shadow-clay-card">
+            <div className="sticky-tape !w-14 !h-4 !-top-2"></div>
             <WaterWaveDecoration color="rgba(245, 158, 11, 0.09)" height="h-16" />
             <div className="relative z-10 flex items-center justify-between text-xs">
               <span className="flex items-center gap-3 font-bold text-slate-800 font-heading">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-b from-white to-amber-50 border border-amber-200 shadow-clay-card flex items-center justify-center shrink-0 text-amber-600">
+                <div className="w-10 h-10 rounded-2xl bg-white/90 border border-amber-200 shadow-clay-card flex items-center justify-center shrink-0 text-amber-600">
                   <Activity className="w-5 h-5 stroke-[2.5]" />
                 </div>
                 <div>
@@ -438,11 +445,11 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
                   <span className="text-[10px] text-slate-500 font-normal">F0 vocal modulation</span>
                 </div>
               </span>
-              <span className="font-black text-slate-900 text-sm bg-amber-100/80 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200/90 shadow-clay-pill">
+              <span className="font-black text-slate-900 text-sm bg-white/95 text-amber-800 px-2.5 py-1 rounded-xl border border-amber-200/90 shadow-clay-pill">
                 {breakdown.pitchDynamics}/100
               </span>
             </div>
-            <div className="relative z-10 w-full h-2.5 rounded-full bg-slate-200/60 shadow-inner overflow-hidden">
+            <div className="relative z-10 w-full h-2.5 rounded-full bg-amber-200/70 shadow-inner overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500 shadow-xs relative"
                 style={{ width: `${breakdown.pitchDynamics}%` }}
@@ -458,9 +465,10 @@ export const ScoreOverview: React.FC<ScoreOverviewProps> = ({ result }) => {
 
         </div>
 
-        {/* Diagnostic Flaw Summary Bar (Clay Inset) */}
-        <div className="clay-inset-well p-4 flex items-center justify-between flex-wrap gap-2 text-xs font-semibold text-slate-700">
-          <div className="flex items-center space-x-2.5">
+        {/* Diagnostic Flaw Summary Memo Strip (Sticky Note Peach with Pushpin) */}
+        <div className="sticky-note sticky-peach p-4 flex items-center justify-between flex-wrap gap-2 text-xs font-semibold text-slate-800 rounded-2xl relative shadow-sm border border-orange-200/90">
+          <div className="sticky-pin sticky-pin-amber !left-6 !-top-2"></div>
+          <div className="flex items-center space-x-2.5 pt-1 sm:pt-0">
             {highFlaws > 0 ? (
               <Clay3DIcon name="warning" size="xs" />
             ) : (
