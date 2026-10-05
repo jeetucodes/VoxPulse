@@ -73,11 +73,11 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Modern App Icon & Branding */}
         <div className="flex items-center space-x-2.5 sm:space-x-3.5">
           <div className="relative group cursor-pointer" onClick={handleLogoClick}>
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-b from-white to-slate-50 shadow-clay-card flex items-center justify-center p-0.5 transition-all duration-300 group-hover:scale-105 border border-white/90 relative overflow-hidden">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white shadow-clay-card flex items-center justify-center p-0.5 transition-all duration-300 group-hover:scale-105 border border-slate-200/90 relative overflow-hidden">
               <img 
                 src="/app-icon.png" 
                 alt="VoxPulse App Icon" 
-                className="w-full h-full object-cover rounded-[10px] sm:rounded-xl shadow-xs"
+                className="w-full h-full object-contain rounded-lg sm:rounded-xl"
               />
             </div>
             {/* Status Live Beacon */}
