@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { 
-   Mic, MicOff, Volume2, VolumeX, RotateCcw, 
-   CornerDownRight, Clock
+  Mic, MicOff, Volume2, VolumeX, RotateCcw, 
+  CornerDownRight, Clock, X, Minus, Sparkles, Send, MessageSquare
 } from 'lucide-react';
 import type { AnalysisResult, QnAMessage } from '../types/speech';
 import { HelpAssistantService } from '../services/helpAssistant';
@@ -19,10 +19,14 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
   const [isListening, setIsListening] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isResponding, setIsResponding] = useState(false);
+  const [detectedLanguage, setDetectedLanguage] = useState<'hi' | 'hinglish' | 'en'>('en');
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isVoiceSupported = speechRecInstance.isSupported();
 
-  // Initialize or re-initialize welcome message whenever result changes
+  // Initialize welcome message whenever result changes
   useEffect(() => {
     const primaryFlaw = result.flaws[0];
     const lowestMetric = Object.entries(result.breakdown).sort((a, b) => a[1] - b[1])[0];
@@ -32,8 +36,8 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
         `• **Overall Score**: **${result.overall_score}/100**\n` +
         `• **Lowest Area**: **${lowestMetric ? lowestMetric[0].toUpperCase() : 'Pacing'}** (${lowestMetric ? lowestMetric[1] : 60}/100)\n` +
         `• **Primary Detected Flaw**: **${primaryFlaw.type.replace('_', ' ').toUpperCase()}** at **${HelpAssistantService.formatTime(primaryFlaw.start)}** (${primaryFlaw.measuredValue || primaryFlaw.severity})\n\n` +
-        `Ask me anything about your delivery flaws, timestamps, or root-cause problems below!`
-      : `Hello! I analyzed your speech audio against competition standards. Your delivery scored an impressive **${result.overall_score}/100** with no critical flaws detected! Ask me anything about your acoustic cadence or pre-competition drills.`;
+        `Ask me anything in **Hindi, Hinglish, or English**! I will reply in the same language you talk in.`
+      : `Hello! I analyzed your speech audio against competition standards. Your delivery scored an impressive **${result.overall_score}/100** with no critical flaws detected! Ask me anything in **Hindi, Hinglish, or English** about your acoustic cadence or pre-competition drills.`;
 
     setMessages([
       {
@@ -52,15 +56,28 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
 
   // Auto-scroll chat to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (isChatOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isChatOpen]);
+
+  // Escape key to close floating chatbot
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isChatOpen) {
+        setIsChatOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isChatOpen]);
 
   // Compute dynamic suggested question chips based on actual data
   const dynamicSuggestedChips = useMemo(() => {
     return HelpAssistantService.getDynamicSuggestedQuestions(result);
   }, [result]);
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || inputText).trim();
     if (!query) return;
 
@@ -70,6 +87,9 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
       setSpeakingMessageId(null);
     }
 
+    const lang = HelpAssistantService.detectLanguage(query);
+    setDetectedLanguage(lang);
+
     const userMsg: QnAMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
@@ -77,10 +97,24 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
       timestamp: new Date()
     };
 
-    const assistantMsg = HelpAssistantService.generateAnswer(query, result);
-
-    setMessages(prev => [...prev, userMsg, assistantMsg]);
     setInputText('');
+    setMessages(prev => [...prev, userMsg]);
+    setIsResponding(true);
+
+    // Auto-open chatbot if closed
+    if (!isChatOpen) {
+      setIsChatOpen(true);
+    }
+
+    try {
+      const assistantMsg = await HelpAssistantService.generateAnswerAsync(query, result);
+      setMessages(prev => [...prev, assistantMsg]);
+    } catch {
+      const fallback = HelpAssistantService.generateAnswer(query, result);
+      setMessages(prev => [...prev, fallback]);
+    } finally {
+      setIsResponding(false);
+    }
   };
 
   const handleChipClick = (chipText: string) => {
@@ -110,7 +144,8 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
       },
       () => {
         setIsListening(false);
-      }
+      },
+      'en-IN' // Accurately captures both Indian English and Hindi words
     );
 
     if (started) {
@@ -135,7 +170,9 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
       .replace(/https?:\/\/\S+/g, '');
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.05;
+    const lang = HelpAssistantService.detectLanguage(text);
+    utterance.lang = lang === 'hi' ? 'hi-IN' : 'en-IN';
+    utterance.rate = 1.0;
     utterance.pitch = 1.0;
 
     utterance.onend = () => {
@@ -160,7 +197,7 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
       {
         id: `welcome-${Date.now()}`,
         sender: 'assistant',
-        text: `Chat reset. I am ready to analyze your delivery data. Ask a question or click any starter pill below!`,
+        text: `Chat reset. I am ready to answer your questions in Hindi, Hinglish, or English. Ask about your flaws, pacing, or score below!`,
         timestamp: new Date(),
         suggestedAction: primaryFlaw ? {
           type: 'seek',
@@ -176,11 +213,10 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
     const lines = text.split('\n');
 
     return (
-      <div className="space-y-1.5 leading-relaxed">
+      <div className="space-y-1.5 leading-relaxed text-xs sm:text-sm">
         {lines.map((line, lIdx) => {
           const trimmed = line.trim();
 
-          // Empty line
           if (!trimmed) {
             return <div key={lIdx} className="h-1" />;
           }
@@ -237,287 +273,303 @@ export const AskForHelp: React.FC<AskForHelpProps> = ({ result, onSeek }) => {
   };
 
   return (
-    <div className="card-clay p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-white/80 space-y-4 sm:space-y-5 relative">
-      
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-        <div className="flex items-center space-x-3">
-          <Clay3DIcon name="robot" size="sm" withPedestal floating />
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base sm:text-xl font-black text-slate-900 font-heading tracking-tight">
-                Ask for Help: Speech Assistant
-              </h3>
-              <span className="px-2.5 py-0.5 rounded-full bg-violet-100/70 border border-violet-200 text-violet-800 text-[10px] font-bold uppercase shadow-sm">
-                FR-6 & FR-8
-              </span>
+    <>
+      {/* 1. INLINE PAGE BANNER CARD (Mounted at section-coach) */}
+      <div className="card-clay p-5 sm:p-7 rounded-2xl sm:rounded-3xl border border-white/80 space-y-4 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div className="flex items-center space-x-3.5">
+            <Clay3DIcon name="robot" size="sm" withPedestal floating />
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-base sm:text-xl font-black text-slate-900 font-heading tracking-tight">
+                  Ask for Help: Speech Assistant
+                </h3>
+                <span className="px-2.5 py-0.5 rounded-full bg-violet-100/70 border border-violet-200 text-violet-800 text-[10px] font-bold uppercase shadow-sm">
+                  FR-6 & FR-8 • Multi-Lingual
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">
+                Ask in <strong>Hindi, Hinglish, or English</strong>. Our assistant detects your language and responds in the same language.
+              </p>
             </div>
-            <p className="text-xs text-slate-500 font-medium">
-              Data-grounded delivery diagnosis, root-cause analysis & voice follow-ups
-            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsChatOpen(prev => !prev)}
+              className="btn-clay-primary px-4 py-2 sm:px-5 sm:py-2.5 text-xs font-bold flex items-center gap-2"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>{isChatOpen ? 'Minimize Assistant' : 'Open Speech Assistant 💬'}</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleResetChat}
-            className="btn-clay-secondary px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5"
-            title="Reset assistant conversation"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-[11px]">Reset</span>
-          </button>
-
-          <span className="text-xs bg-emerald-50/90 px-3 py-1.5 rounded-full border border-emerald-200 text-emerald-800 font-bold flex items-center gap-1.5 shadow-clay-pill">
-            <Clay3DIcon name="tick" size="xs" />
-            <span>Acoustic Grounded</span>
+        {/* Quick starter question chips directly on page */}
+        <div className="space-y-2">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            Suggested Quick Inquiries (Click to ask assistant):
           </span>
-        </div>
-      </div>
-
-      {/* Suggested Question Chips (FR-6.4: Dynamically derived from actual weak points) */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-          <Clay3DIcon name="bulb" size="xs" />
-          <span>Suggested Questions (Grounded in your weak points):</span>
-        </div>
-
-        <div className="flex flex-wrap gap-2 pt-0.5">
-          {dynamicSuggestedChips.map((chip, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleChipClick(chip.label)}
-              className="text-xs px-3.5 py-1.5 rounded-full bg-white/95 text-slate-700 font-semibold border border-slate-200/90 shadow-clay-pill hover:border-violet-300 hover:bg-violet-50/50 hover:scale-[1.02] active:scale-95 transition-all text-left flex items-center gap-1.5"
-            >
-              <span>{chip.label}</span>
-              <CornerDownRight className="w-3 h-3 text-slate-400 shrink-0" />
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Chat Messages Container */}
-      <div className="clay-inset-well p-4 sm:p-5 h-80 sm:h-96 overflow-y-auto space-y-4 scroll-smooth">
-        {messages.map((msg) => {
-          const isUser = msg.sender === 'user';
-          const isSpeaking = speakingMessageId === msg.id;
-
-          return (
-            <div
-              key={msg.id}
-              className={`flex items-start gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
-            >
-              {!isUser && (
-                <div className="shrink-0 mt-0.5">
-                  <Clay3DIcon name="robot" size="xs" withPedestal />
-                </div>
-              )}
-
-              <div
-                className={`max-w-[90%] sm:max-w-[82%] text-xs sm:text-sm ${
-                  isUser
-                    ? 'bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 text-white rounded-3xl rounded-tr-sm shadow-sugary-violet p-4 sm:p-5 font-medium relative overflow-hidden'
-                    : 'card-clay text-slate-800 rounded-3xl rounded-tl-sm border border-white/90 p-4 sm:p-5 space-y-3.5'
-                }`}
+          <div className="flex flex-wrap gap-2">
+            {dynamicSuggestedChips.map((chip, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setIsChatOpen(true);
+                  handleChipClick(chip.label);
+                }}
+                className="text-xs px-3.5 py-1.5 rounded-full bg-white/95 text-slate-700 font-semibold border border-slate-200/90 shadow-clay-pill hover:border-violet-300 hover:bg-violet-50/50 hover:scale-[1.02] active:scale-95 transition-all text-left flex items-center gap-1.5"
               >
-                {/* User Bubble Top Gloss Sheen */}
-                {isUser && (
-                  <div className="absolute top-1 left-2 right-2 h-1/3 bg-gradient-to-b from-white/25 to-transparent rounded-full pointer-events-none" />
-                )}
-
-                {/* Text Content */}
-                {isUser ? (
-                  <p className="whitespace-pre-line relative z-10">{msg.text}</p>
-                ) : (
-                  renderFormattedText(msg.text)
-                )}
-
-                {/* Structured Causal Acoustic Diagnostic Attachment (FR-6.2 & FR-6.3) */}
-                {!isUser && msg.dataGrounding && (
-                  <div className="clay-inset-well p-3.5 space-y-2.5 mt-2 text-xs">
-                    
-                    {/* Diagnostic Attachment Header */}
-                    <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-200/80 pb-2">
-                      <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                        <span className="w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping" />
-                        <span className="uppercase tracking-wider text-[11px] text-pink-700 font-black">
-                          {msg.dataGrounding.title || 'Acoustic Diagnosis Grounding'}
-                        </span>
-                      </div>
-
-                      {msg.dataGrounding.timeRange && (
-                        <span className="px-2.5 py-0.5 rounded-full bg-white border border-slate-200 text-[11px] font-mono font-semibold text-slate-700 flex items-center gap-1 shadow-sm">
-                          <Clock className="w-3 h-3 text-slate-400" />
-                          <span>{msg.dataGrounding.timeRange}</span>
-                          {msg.dataGrounding.durationSec && (
-                            <span className="text-slate-400 font-normal">({msg.dataGrounding.durationSec}s)</span>
-                          )}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Measured Data Comparison Pill */}
-                    {(msg.dataGrounding.measuredValue || msg.dataGrounding.baselineValue) && (
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
-                        {msg.dataGrounding.measuredValue && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-pink-50 border border-pink-200 text-pink-800 font-bold shadow-sm">
-                            Measured: {msg.dataGrounding.measuredValue}
-                          </span>
-                        )}
-                        {msg.dataGrounding.baselineValue && (
-                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold shadow-sm">
-                            Ideal Baseline: {msg.dataGrounding.baselineValue}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Affected Words in Transcript */}
-                    {msg.dataGrounding.affectedWords && (
-                      <div className="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200 text-slate-800 shadow-sm">
-                        <span className="text-[10px] font-bold uppercase text-amber-700 block">
-                          Spoken Words Flagged:
-                        </span>
-                        <span className="italic font-bold font-serif text-xs text-slate-900">
-                          {msg.dataGrounding.affectedWords}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Contest Impact */}
-                    {msg.dataGrounding.contestImpact && (
-                      <div className="text-[11px] text-slate-700 font-normal">
-                        <strong className="font-bold text-pink-700">Contest Impact: </strong>
-                        <span>{msg.dataGrounding.contestImpact}</span>
-                      </div>
-                    )}
-
-                    {/* Action Seek Audio Button */}
-                    {msg.dataGrounding.seekTime !== undefined && (
-                      <div className="pt-1">
-                        <button
-                          onClick={() => onSeek(msg.dataGrounding!.seekTime!)}
-                          className="btn-clay-primary px-3.5 py-1.5 text-xs inline-flex items-center gap-1.5 font-bold"
-                        >
-                          <Clay3DIcon name="play" size="xs" />
-                          <span>Play Flaw Segment ({HelpAssistantService.formatTime(msg.dataGrounding.seekTime)})</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Assistant Footer: Seek to Timestamp & Voice Read Aloud (FR-8.2) */}
-                {!isUser && (
-                  <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100">
-                    <div className="flex items-center gap-2">
-                      {msg.suggestedAction && msg.suggestedAction.time !== undefined && !msg.dataGrounding?.seekTime && (
-                        <button
-                          onClick={() => onSeek(msg.suggestedAction!.time!)}
-                          className="px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200 text-xs font-bold hover:bg-violet-100 shadow-clay-pill transition-all flex items-center gap-1.5"
-                        >
-                          <Clay3DIcon name="play" size="xs" />
-                          <span>Jump to {HelpAssistantService.formatTime(msg.suggestedAction.time)}</span>
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Text-To-Speech Play / Stop (FR-8.2) */}
-                    <button
-                      onClick={() => handleToggleReadAloud(msg.id, msg.text)}
-                      className={`px-3 py-1 rounded-full border text-xs font-semibold transition-all flex items-center gap-1.5 shadow-clay-pill ${
-                        isSpeaking
-                          ? 'bg-violet-600 text-white border-violet-600 shadow-sugary-violet animate-pulse'
-                          : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-600'
-                      }`}
-                      title={isSpeaking ? 'Stop speaking' : 'Read answer aloud with Web Speech API'}
-                    >
-                      {isSpeaking ? (
-                        <>
-                          <VolumeX className="w-3.5 h-3.5" />
-                          <span className="text-[11px] font-bold">Speaking... (Stop)</span>
-                        </>
-                      ) : (
-                        <>
-                          <Volume2 className="w-3.5 h-3.5" />
-                          <span className="text-[11px]">Read Aloud</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {isUser && (
-                <div className="shrink-0 mt-0.5">
-                  <Clay3DIcon name="speech" size="xs" withPedestal />
-                </div>
-              )}
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
+                <span>{chip.label}</span>
+                <CornerDownRight className="w-3 h-3 text-slate-400 shrink-0" />
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {voiceError && (
-        <div className="text-xs text-pink-800 bg-pink-50 border border-pink-200 p-2.5 rounded-2xl font-medium flex items-center justify-between shadow-sm">
-          <span>{voiceError}</span>
-          <button onClick={() => setVoiceError(null)} className="underline ml-2 font-bold">Dismiss</button>
-        </div>
+      {/* 2. FLOATING LAUNCHER BUTTON (Side Float when minimized) */}
+      {!isChatOpen && (
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-6 right-5 sm:right-6 z-50 group flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-3.5 rounded-full bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 text-white shadow-sugary-violet hover:scale-105 active:scale-95 transition-all duration-300 border border-white/40 overflow-hidden animate-pop-in cursor-pointer"
+          title="Click to open Speech Assistant (Hindi • Hinglish • English)"
+        >
+          <div className="absolute top-1 left-2 right-2 h-1/3 bg-gradient-to-b from-white/30 to-transparent rounded-full pointer-events-none" />
+          <div className="relative">
+            <Clay3DIcon name="robot" size="xs" />
+            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white"></span>
+            </span>
+          </div>
+          <div className="text-left hidden min-[400px]:block">
+            <span className="text-xs font-black tracking-tight block leading-tight">Ask Speech Coach</span>
+            <span className="text-[10px] text-violet-200 font-semibold block leading-tight">Hindi • Hinglish • English</span>
+          </div>
+        </button>
       )}
 
-      {/* Input Bar with Text & Voice (FR-8.1) */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSendMessage();
-        }}
-        className="flex items-center gap-3"
-      >
-        <div className="relative flex-1">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={
-              isListening 
-                ? '🎙️ Listening to your microphone... (Speak your question)' 
-                : 'Ask: "Where are my flaws?", "Why did pacing drop?", "Explain pause at 00:09"...'
-            }
-            className={`w-full py-3.5 pl-4 pr-12 text-xs sm:text-sm font-medium rounded-2xl bg-white border border-slate-200 shadow-inner focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all ${
-              isListening ? 'border-pink-500 bg-pink-50/30 ring-2 ring-pink-500/20' : ''
-            }`}
-          />
+      {/* 3. FLOATING CHATBOT WINDOW (Opens when clicked) */}
+      {isChatOpen && (
+        <div className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-24px)] sm:w-[440px] md:w-[480px] h-[580px] max-h-[85vh] card-clay rounded-3xl border border-white/95 shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-pop-in">
           
-          {/* FR-8.1: Voice Mic Button */}
-          {isVoiceSupported && (
-            <button
-              type="button"
-              onClick={toggleVoiceRecording}
-              className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all ${
-                isListening
-                  ? 'bg-pink-600 text-white shadow-sugary-pink animate-pulse'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-              title={isListening ? 'Stop voice recording' : 'Ask question with voice (Web Speech API)'}
-            >
-              {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            </button>
+          {/* Floating Chat Header */}
+          <div className="p-3.5 sm:p-4 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-700 text-white flex items-center justify-between shadow-sm relative shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="relative">
+                <Clay3DIcon name="robot" size="xs" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-white"></span>
+              </div>
+              <div>
+                <h4 className="font-heading font-black text-xs sm:text-sm tracking-tight text-white flex items-center gap-1.5">
+                  <span>VoxPulse Speech Coach</span>
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/20 text-white uppercase">AI</span>
+                </h4>
+                <p className="text-[10px] text-violet-200 font-medium">
+                  {detectedLanguage === 'hi' ? '🇮🇳 हिंदी में बातचीत' : detectedLanguage === 'hinglish' ? '🇮🇳 Hinglish Mode' : '🌐 English & Multilingual'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleResetChat}
+                className="p-1.5 rounded-xl hover:bg-white/20 text-white/90 hover:text-white transition-colors"
+                title="Reset conversation"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-white/20 text-white/90 hover:text-white transition-colors"
+                title="Minimize chat"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-white/20 text-white/90 hover:text-white transition-colors"
+                title="Close chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Inquiry Chips Carousel at top of chat */}
+          <div className="p-2 sm:p-2.5 bg-slate-50/90 border-b border-slate-200/80 overflow-x-auto no-scrollbar flex items-center gap-1.5 shrink-0">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0 flex items-center gap-1 pl-1">
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              Try:
+            </span>
+            {dynamicSuggestedChips.map((chip, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleChipClick(chip.label)}
+                className="text-[11px] px-2.5 py-1 rounded-full bg-white text-slate-700 font-semibold border border-slate-200 shadow-xs hover:border-violet-300 hover:bg-violet-50 shrink-0 whitespace-nowrap transition-all"
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Chat Messages Stream */}
+          <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3.5 bg-slate-50/50">
+            {messages.map((msg) => {
+              const isUser = msg.sender === 'user';
+              const isSpeaking = speakingMessageId === msg.id;
+
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex items-start gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  {!isUser && (
+                    <div className="shrink-0 mt-0.5">
+                      <Clay3DIcon name="robot" size="xs" />
+                    </div>
+                  )}
+
+                  <div
+                    className={`max-w-[88%] text-xs sm:text-sm ${
+                      isUser
+                        ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-2xl rounded-tr-sm shadow-md p-3 sm:p-3.5 font-medium'
+                        : 'card-clay text-slate-800 rounded-2xl rounded-tl-sm border border-white/95 p-3.5 sm:p-4 space-y-2.5 shadow-sm'
+                    }`}
+                  >
+                    {/* Message Header */}
+                    <div className="flex items-center justify-between gap-2 border-b border-black/5 pb-1">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${isUser ? 'text-violet-200' : 'text-slate-400'}`}>
+                        {isUser ? 'You' : 'Speech Coach AI'}
+                      </span>
+
+                      {!isUser && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleToggleReadAloud(msg.id, msg.text)}
+                            className={`p-1 rounded-md transition-colors ${
+                              isSpeaking 
+                                ? 'text-violet-600 bg-violet-100 animate-pulse' 
+                                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                            }`}
+                            title={isSpeaking ? 'Stop reading' : 'Read aloud in detected language'}
+                          >
+                            {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Text Body */}
+                    {isUser ? (
+                      <p className="leading-relaxed">{msg.text}</p>
+                    ) : (
+                      renderFormattedText(msg.text)
+                    )}
+
+                    {/* Grounded Flaw Card & Quick Audio Seek */}
+                    {msg.dataGrounding && (
+                      <div className="p-2.5 rounded-xl bg-violet-50/70 border border-violet-100 text-[11px] space-y-1.5">
+                        <div className="flex items-center justify-between font-bold text-violet-900">
+                          <span>{msg.dataGrounding.title}</span>
+                          <span className="font-mono text-[10px] bg-white px-2 py-0.5 rounded-full border border-violet-200">
+                            {msg.dataGrounding.timeRange}
+                          </span>
+                        </div>
+                        {msg.dataGrounding.affectedWords && (
+                          <p className="text-slate-600 italic">
+                            Words: {msg.dataGrounding.affectedWords}
+                          </p>
+                        )}
+                        {msg.suggestedAction && typeof msg.suggestedAction.time === 'number' && (
+                          <button
+                            onClick={() => onSeek(msg.suggestedAction!.time!)}
+                            className="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-violet-600 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 shadow-sm hover:bg-violet-700 transition-colors"
+                          >
+                            <Clock className="w-3 h-3" />
+                            <span>Play & Seek to {HelpAssistantService.formatTime(msg.suggestedAction.time)}</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Responding animation indicator */}
+            {isResponding && (
+              <div className="flex items-center gap-2 text-xs text-slate-500 italic pl-6 animate-pulse">
+                <Clay3DIcon name="robot" size="xs" />
+                <span>Coach is thinking in your language...</span>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Voice Error notice if any */}
+          {voiceError && (
+            <div className="text-[11px] text-pink-800 bg-pink-50 border-t border-pink-200 px-3 py-1.5 font-medium flex items-center justify-between">
+              <span>{voiceError}</span>
+              <button onClick={() => setVoiceError(null)} className="underline ml-2 font-bold">Dismiss</button>
+            </div>
           )}
+
+          {/* Chat Footer with Input & Voice Mic */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage();
+            }}
+            className="p-2.5 sm:p-3 bg-white border-t border-slate-200/90 flex items-center gap-2 shrink-0"
+          >
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder={
+                  isListening
+                    ? '🎙️ Listening... (Speak in Hindi or English)'
+                    : 'Poochiye (Ask in Hindi, Hinglish, or English)...'
+                }
+                className={`w-full py-2.5 pl-3.5 pr-10 text-xs sm:text-sm font-medium rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all ${
+                  isListening ? 'border-pink-500 bg-pink-50/40 ring-2 ring-pink-500/20' : ''
+                }`}
+              />
+
+              {/* Voice Mic Button */}
+              {isVoiceSupported && (
+                <button
+                  type="button"
+                  onClick={toggleVoiceRecording}
+                  className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg transition-all ${
+                    isListening
+                      ? 'bg-rose-500 text-white animate-pulse shadow-sm'
+                      : 'text-slate-400 hover:text-slate-700 hover:bg-slate-200/70'
+                  }`}
+                  title={isListening ? 'Stop voice listening' : 'Voice input in Hindi or English'}
+                >
+                  {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                </button>
+              )}
+            </div>
+
+            {/* Send Button */}
+            <button
+              type="submit"
+              disabled={!inputText.trim()}
+              className="p-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 active:scale-95 transition-all shrink-0"
+              title="Send question"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
+
         </div>
-
-        {/* Send Button */}
-        <button
-          type="submit"
-          disabled={!inputText.trim()}
-          className="btn-clay-primary px-3 sm:px-5 py-3 sm:py-3.5 text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-        >
-          <span className="hidden sm:inline">Ask Assistant</span>
-          <span className="sm:hidden">Ask</span>
-          <Clay3DIcon name="rocket" size="xs" />
-        </button>
-      </form>
-
-    </div>
+      )}
+    </>
   );
 };

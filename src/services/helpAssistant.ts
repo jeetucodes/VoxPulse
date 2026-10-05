@@ -1,4 +1,5 @@
 import type { AnalysisResult, QnAMessage, TranscriptWord } from '../types/speech';
+import { TranslatorService } from './translator';
 
 export interface HelpIntentMatch {
   intent: 
@@ -17,6 +18,32 @@ export interface HelpIntentMatch {
 }
 
 export class HelpAssistantService {
+  /**
+   * Detects the language of user input (Hindi Devanagari, Hinglish, or English)
+   */
+  public static detectLanguage(query: string): 'hi' | 'hinglish' | 'en' {
+    if (TranslatorService.isHindiText(query)) {
+      return 'hi';
+    }
+
+    const q = query.toLowerCase();
+    const hinglishMarkers = [
+      'kya', 'kaise', 'kahan', 'kyu', 'kyun', 'batao', 'bataiye', 'meri', 'mera', 'mere',
+      'hai', 'hain', 'hua', 'hue', 'hui', 'galti', 'galtiyan', 'kamzori', 'rukna', 'ruka',
+      'aawaz', 'saaf', 'thik', 'karna', 'chahiye', 'aap', 'tum', 'mujhe', 'suno',
+      'achha', 'accha', 'kharab', 'tez', 'jaldi', 'kam', 'jyada', 'sahi', 'pareshani',
+      'madad', 'seekho', 'sikhao', 'baat', 'bolo', 'sunao', 'rukaawat', 'kaisi', 'kitna'
+    ];
+
+    const words = q.split(/\s+/).map(w => w.replace(/[^a-z]/g, ''));
+    const matches = words.filter(w => hinglishMarkers.includes(w));
+    if (matches.length >= 1) {
+      return 'hinglish';
+    }
+
+    return 'en';
+  }
+
   /**
    * Intelligently parses user query, supporting English and Hinglish/Hindi keywords
    */
@@ -529,6 +556,12 @@ export class HelpAssistantService {
       }
     }
 
+    // If Hinglish detected, construct natural conversational Hinglish
+    const lang = this.detectLanguage(query);
+    if (lang === 'hinglish') {
+      responseText = this.generateHinglishAnswer(intent, query, result, targetTimestamp);
+    }
+
     return {
       id: `msg-${Date.now()}`,
       sender: 'assistant',
@@ -537,6 +570,136 @@ export class HelpAssistantService {
       suggestedAction,
       dataGrounding
     };
+  }
+
+  public static generateHinglishAnswer(
+    intent: HelpIntentMatch['intent'],
+    _query: string,
+    result: AnalysisResult,
+    targetTimestamp?: number
+  ): string {
+    const { flaws, overall_score, breakdown, participantSummary, audioBaselineSummary, transcript } = result;
+
+    switch (intent) {
+      case 'specific_time': {
+        const t = targetTimestamp || 0;
+        const matchingFlaw = flaws.find(f => t >= f.start - 0.5 && t <= f.end + 0.5);
+        if (matchingFlaw) {
+          const phrase = this.getAffectedPhrase(matchingFlaw.start, matchingFlaw.end, transcript);
+          return `Aapke bataye time **${this.formatTime(t)}** par **${matchingFlaw.type.replace('_', ' ').toUpperCase()}** (${matchingFlaw.severity} severity) detect hui hai.\n\n` +
+            `• **Measured Metric**: ${matchingFlaw.measuredValue || 'Deviation'}\n` +
+            `• **Time Window**: ${this.formatTime(matchingFlaw.start)} – ${this.formatTime(matchingFlaw.end)}\n` +
+            (phrase ? `• **Words Flagged**: *"${phrase}"*\n\n` : '\n') +
+            `**Asli Wajah:**\n${matchingFlaw.explanation}\n\n` +
+            `**Isko Kaise Sudharein:**\n${matchingFlaw.improvement}`;
+        }
+        return `**${this.formatTime(t)}** ke aas-paas aapki delivery normal range me thi aur energy steady rahi.`;
+      }
+
+      case 'mistakes': {
+        if (flaws.length === 0) {
+          return `Shandaar delivery! Aapki speech me koi bada delivery flaw detect nahi hua. Aapka average cadence **${participantSummary.avgWpm} WPM** raha aur pause ratio **${Math.round(participantSummary.pauseRatio * 100)}%** raha, jo competition standard ke barabar hai.`;
+        }
+        const primaryFlaw = flaws[0];
+        const flawList = flaws.map((f, i) => {
+          const p = this.getAffectedPhrase(f.start, f.end, transcript);
+          const quote = p ? ` shabdon par *"${p}"*` : '';
+          return `${i + 1}. **${f.type.replace('_', ' ').toUpperCase()}** (**${this.formatTime(f.start)}–${this.formatTime(f.end)}**): ${f.explanation}${quote}`;
+        }).join('\n\n');
+
+        return `Aapki speech me total **${flaws.length} grounded delivery flaw${flaws.length > 1 ? 's' : ''}** detect huye hain:\n\n` +
+          `${flawList}\n\n` +
+          `👉 **Sabse Pehle Kya Theek Karein:**\nAapki sabse badi dikkat **${primaryFlaw.type.replace('_', ' ')}** hai jo **${this.formatTime(primaryFlaw.start)}** pe hui. Neeche diye card se aap direct is segment ko play karke sun sakte hain.`;
+      }
+
+      case 'fast_speech': {
+        const fastFlaws = flaws.filter(f => f.type === 'fast_speech');
+        if (fastFlaws.length > 0) {
+          const worst = fastFlaws.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
+          const phrase = this.getAffectedPhrase(worst.start, worst.end, transcript);
+          return `**Aapki Fast Speech (Tez Bolne) Ki Asli Wajah:**\n\n` +
+            `**${this.formatTime(worst.start)}–${this.formatTime(worst.end)}** ke dauran aapki delivery surge hokar **${worst.measuredValue || '190+ WPM'}** tak pahunch gayi ` +
+            `(jabki standard competition speed **${worst.baselineValue || '130 WPM'}** hoti hai).\n\n` +
+            (phrase ? `🗣️ **Words Rushed**: *"${phrase}"*\n\n` : '') +
+            `🔬 **Acoustic Root Cause:**\nExcitement ya anxiety ke waqt unstressed syllables compress ho jate hain aur vowels 130ms se chote ho jate hain. Isse audience ko points absorb karne ka waqt nahi milta.\n\n` +
+            `🛠️ **Improvement Drills:**\n` +
+            `1. **Metronome Drill**: 120-130 BPM par bolne ka practice karein.\n` +
+            `2. **Pause Marks (//)**: Apne notes me double slash lagayein jahan 0.4s ka pause zaroori ho.\n` +
+            `3. **Vowel Stretch**: Main nouns ko thoda lamba karke bolein.`;
+        }
+        return `Aapka pacing bilkul badhiya hai! Aapki speech ka average **${participantSummary.avgWpm} WPM** raha jo target standard **${audioBaselineSummary.avgWpm} WPM** ke anukool hai.`;
+      }
+
+      case 'pauses': {
+        const pauseFlaws = flaws.filter(f => f.type === 'unnatural_pause');
+        if (pauseFlaws.length > 0) {
+          const worst = pauseFlaws.sort((a, b) => (b.end - b.start) - (a.end - a.start))[0];
+          const phrase = this.getAffectedPhrase(Math.max(0, worst.start - 1.5), worst.end + 1.5, transcript);
+          return `**Aapke Unnatural Pauses / Rukaawat Ki Asli Wajah:**\n\n` +
+            `**${this.formatTime(worst.start)}–${this.formatTime(worst.end)}** par lagbhag **${worst.measuredValue || (worst.end - worst.start).toFixed(1) + 's'}** ka dead-air pause detect hua hai.\n\n` +
+            (phrase ? `🗣️ **Rukaawat ke aas-paas ke shabd**: *"${phrase}"*\n\n` : '') +
+            `🔬 **Acoustic Root Cause:**\n0.35s–0.5s ka rhetorical pause natural hota hai, lekin 0.8s se lamba pause audience ko lagta hai ki speaker confidence kho raha hai ya recall freeze hua hai.\n\n` +
+            `🛠️ **Improvement Drills:**\n` +
+            `1. **Vocal Bridge**: Rukaawat aane par 'Furthermore' ya 'In addition' jaise bridge words use karein.\n` +
+            `2. **Diaphragm Pre-load**: Sentence shuru karne se pehle poori saans lein taaki beech me saans na toote.`;
+        }
+        return `Aapki fluency bahut acchi rahi! Aapka total pause ratio **${Math.round(participantSummary.pauseRatio * 100)}%** raha, jo championship benchmark ke barabar hai.`;
+      }
+
+      case 'mumbling': {
+        const mumbleFlaws = flaws.filter(f => f.type === 'mumbling');
+        if (mumbleFlaws.length > 0) {
+          const worst = mumbleFlaws[0];
+          const phrase = this.getAffectedPhrase(worst.start, worst.end, transcript);
+          return `**Aapki Mumbling / Unclear Speech Ki Wajah:**\n\n` +
+            `**${this.formatTime(worst.start)}–${this.formatTime(worst.end)}** par vocal clarity drop hui hai (${worst.measuredValue || 'Clarity dip'}).\n\n` +
+            (phrase ? `🗣️ **Muffled Phrase**: *"${phrase}"*\n\n` : '') +
+            `🔬 **Acoustic Root Cause:**\nSentence ke end me jaw movement kam hone aur breath drop hone se terminal consonants (T, D, K, P) dhab gaye.\n\n` +
+            `🛠️ **Improvement Drills:**\n` +
+            `1. **Wine Cork Drill**: Daanton ke beech wine cork rakh kar 60 seconds practice karein taaki jaw open ho.\n` +
+            `2. **Terminal Snapping**: Har word ke aakhri letter sound ko deliberately saaf bolein.`;
+        }
+        return `Aapki articulation bilkul saaf aur crisp rahi! Sub-score **${breakdown.articulation}/100** mila hai, jo vibrant clarity darshata hai.`;
+      }
+
+      case 'score': {
+        const sortedMetrics = Object.entries(breakdown).sort((a, b) => a[1] - b[1]);
+        const lowest = sortedMetrics[0];
+        return `Aapka overall composite score **${overall_score}/100** hai.\n\n` +
+          `• **Pacing**: ${breakdown.pacing}/100\n` +
+          `• **Fluency**: ${breakdown.fluency}/100\n` +
+          `• **Articulation**: ${breakdown.articulation}/100\n` +
+          `• **Pitch Dynamics**: ${breakdown.pitchDynamics}/100\n\n` +
+          `Sabse zyada marks **${lowest[0].toUpperCase()}** section me kate hain (${lowest[1]}/100). Is flaw ko fix karke aapka score 12-16 points seedha upar ja sakta hai.`;
+      }
+
+      default:
+        return `**Aapke Liye 5-Minute Pre-Competition Drill Plan:**\n\n` +
+          `1. **1 Min Diaphragm Warmup**: 4s saans lein, 4s rokein, 6s me steady 'Sssss' sound ke saath release karein.\n` +
+          `2. **2 Min Metronome Practice**: 125-130 WPM cadence par bolne ka abhyas karein.\n` +
+          `3. **2 Min Articulation**: Tongue twisters se consonants sharp karein.`;
+    }
+  }
+
+  public static async generateAnswerAsync(query: string, result: AnalysisResult): Promise<QnAMessage> {
+    const lang = this.detectLanguage(query);
+    const baseMsg = this.generateAnswer(query, result);
+
+    if (lang === 'hi') {
+      try {
+        const hiText = await TranslatorService.translateText(baseMsg.text, 'en', 'hi');
+        if (hiText && hiText.trim().length > 0) {
+          return {
+            ...baseMsg,
+            text: hiText
+          };
+        }
+      } catch {
+        // Fallback to baseMsg if network translation fails
+      }
+    }
+
+    return baseMsg;
   }
 
   public static formatTime(sec: number): string {
