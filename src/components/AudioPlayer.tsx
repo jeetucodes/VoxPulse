@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { RotateCcw, FastForward, Rewind, VolumeX } from 'lucide-react';
+import { Play, Pause, RotateCcw, FastForward, Rewind, VolumeX } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
 import type { Flaw } from '../types/speech';
 
@@ -294,19 +294,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
             <Rewind className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
-          {/* 3D Sugary Circular Play/Pause Button */}
+          {/* Default Clean Circular Play/Pause Button */}
           <button
             onClick={isPlaying ? onPause : onPlay}
-            className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-b from-violet-500 via-indigo-600 to-purple-700 shadow-sugary-violet flex items-center justify-center p-2 text-white transition-all duration-200 hover:scale-110 active:scale-95 active:translate-y-1 relative overflow-hidden group border border-white/40 shrink-0"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-violet-600 hover:bg-violet-700 active:scale-95 text-white flex items-center justify-center shadow-md transition-all shrink-0"
             title={isPlaying ? 'Pause' : 'Play Audio'}
           >
-            {/* Top Gloss Candy Sheen */}
-            <div className="absolute top-1 left-2.5 right-2.5 h-3 rounded-full bg-gradient-to-b from-white/80 via-white/40 to-transparent pointer-events-none" />
-
             {isPlaying ? (
-              <Clay3DIcon name="pause" size="sm" />
+              <Pause className="w-5 h-5 fill-current" />
             ) : (
-              <Clay3DIcon name="play" size="sm" />
+              <Play className="w-5 h-5 fill-current ml-0.5" />
             )}
           </button>
 

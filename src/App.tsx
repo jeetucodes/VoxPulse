@@ -39,7 +39,6 @@ export function App() {
   const startTimeRef = useRef<number>(0);
   const startOffsetRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
-  const hasRedirectedToTranscriptRef = useRef<boolean>(false);
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
@@ -105,17 +104,6 @@ export function App() {
     startTimeRef.current = ctx.currentTime;
     startOffsetRef.current = offset;
     setIsPlaying(true);
-
-    // Redirect to transcript section on first audio play without locking subsequent scrolling
-    if (!hasRedirectedToTranscriptRef.current) {
-      hasRedirectedToTranscriptRef.current = true;
-      setTimeout(() => {
-        const transcriptEl = document.getElementById('section-transcript');
-        if (transcriptEl) {
-          transcriptEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 120);
-    }
   }, [audioBuffer, currentTime, duration, getAudioContext]);
 
   const handlePause = useCallback(() => {
@@ -159,7 +147,6 @@ export function App() {
 
   const handleSelectSample = (sample: SampleSpeech) => {
     handlePause();
-    hasRedirectedToTranscriptRef.current = false;
     setActiveSampleTitle(sample.title);
 
     const buffer = generateSyntheticSpeechAudio(sample.synthTonePattern, sample.durationSec);
@@ -182,7 +169,6 @@ export function App() {
 
   const handleUploadFile = async (file: File | Blob, transcript?: string) => {
     handlePause();
-    hasRedirectedToTranscriptRef.current = false;
     setAnalysisError(null);
     setIsAnalyzing(true);
     setAnalysisProgress(5);
@@ -217,7 +203,6 @@ export function App() {
 
   const handleReset = () => {
     handlePause();
-    hasRedirectedToTranscriptRef.current = false;
     setAnalysisResult(null);
     setAudioBuffer(null);
     setActiveSampleTitle('');
@@ -240,7 +225,6 @@ export function App() {
   };
 
   const handleImportJson = (imported: any) => {
-    hasRedirectedToTranscriptRef.current = false;
     if (analysisResult) {
       setAnalysisResult({
         ...analysisResult,
