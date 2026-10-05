@@ -319,33 +319,34 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
             </div>
 
             {/* Live Real-Time Speech Recognition Words Preview */}
-            <div className="p-4 rounded-2xl bg-white border border-slate-200/90 text-xs leading-relaxed min-h-[55px] shadow-sm">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  {isMobileDevice ? 'Mobile Audio Capture Mode:' : 'Live Speech Recognition Preview:'}
-                </span>
-                {isMobileDevice && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
-                    <Smartphone className="w-3 h-3" />
-                    Clean Mobile DSP
+            <div className="p-4 rounded-2xl bg-white border border-slate-200/90 text-xs leading-relaxed min-h-[64px] shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                   </span>
-                )}
+                  Simultaneous Live Transcription:
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
+                  <Sparkles className="w-3 h-3 text-violet-600" />
+                  Real-time DSP + STT
+                </span>
               </div>
-              <p className="text-slate-800 font-medium">
+              <p className="text-slate-800 text-sm sm:text-base font-medium leading-relaxed">
                 {liveTranscript || interimWord ? (
                   <span>
-                    {liveTranscript}
-                    <span className="text-violet-600 font-semibold italic ml-1">{interimWord}</span>
-                  </span>
-                ) : isMobileDevice ? (
-                  <span className="text-slate-500 italic flex items-center gap-1.5">
-                    <Clay3DIcon name="notes" size="xs" />
-                    Recording audio waveform cleanly. Dictate or auto-align words right in the next review step.
+                    <span>{liveTranscript}</span>
+                    {interimWord && (
+                      <span className="text-violet-600 font-bold ml-1.5 inline-block animate-pulse">
+                        {interimWord}
+                      </span>
+                    )}
                   </span>
                 ) : (
-                  <span className="text-slate-400 italic flex items-center gap-1.5">
+                  <span className="text-slate-400 italic flex items-center gap-2">
                     <Clay3DIcon name="mic" size="xs" />
-                    Listening to your voice... Speak clearly into your mic.
+                    <span>Listening & transcribing simultaneously... Speak clearly into your microphone.</span>
                   </span>
                 )}
               </p>

@@ -19,30 +19,98 @@ export class LiveRecorderService {
   private isRecording = false;
 
   private accumulatedFinalTranscript = '';
-  private currentSessionFinal = '';
   private currentSessionInterim = '';
   private currentLanguage = 'en-IN';
+  private sttRestartTimeout: any = null;
+  private sttBlocked = false;
 
   public isSpeechRecognitionAvailable(): boolean {
     const win = typeof window !== 'undefined' ? (window as any) : null;
     return !!(win?.SpeechRecognition || win?.webkitSpeechRecognition);
   }
 
-  private initSpeechRecognition(lang: string = 'en-IN'): any {
+  private startSpeechRecognition(options: LiveRecorderOptions): void {
     const win = typeof window !== 'undefined' ? (window as any) : null;
-    const SpeechRecognition = win?.SpeechRecognition || win?.webkitSpeechRecognition;
-    if (!SpeechRecognition) return null;
+    const SpeechRecognitionClass = win?.SpeechRecognition || win?.webkitSpeechRecognition;
+    if (!SpeechRecognitionClass) {
+      console.warn('SpeechRecognition is not supported in this browser environment.');
+      return;
+    }
 
     try {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = lang;
-      recognition.maxAlternatives = 1;
-      return recognition;
+      this.speechRecognition = new SpeechRecognitionClass();
+      this.speechRecognition.continuous = true;
+      this.speechRecognition.interimResults = true;
+      this.speechRecognition.lang = this.currentLanguage;
+      this.speechRecognition.maxAlternatives = 1;
+
+      this.speechRecognition.onresult = (event: any) => {
+        let interim = '';
+        let newFinal = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const res = event.results[i];
+          if (res.isFinal) {
+            newFinal += res[0].transcript + ' ';
+          } else {
+            interim += res[0].transcript;
+          }
+        }
+
+        if (newFinal.trim()) {
+          this.accumulatedFinalTranscript = [this.accumulatedFinalTranscript, newFinal.trim()]
+            .filter(Boolean)
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        }
+
+        this.currentSessionInterim = interim.trim();
+
+        // Pass interim words and finalized transcript separately to prevent duplicate text display
+        options.onTranscriptUpdate?.(this.currentSessionInterim, this.accumulatedFinalTranscript);
+      };
+
+      this.speechRecognition.onerror = (e: any) => {
+        console.debug('Speech recognition event:', e?.error);
+        if (e?.error === 'not-allowed' || e?.error === 'service-not-allowed') {
+          this.sttBlocked = true;
+        }
+      };
+
+      this.speechRecognition.onend = () => {
+        if (!this.isRecording || this.sttBlocked) return;
+
+        // Commit any pending interim words
+        if (this.currentSessionInterim) {
+          this.accumulatedFinalTranscript = [this.accumulatedFinalTranscript, this.currentSessionInterim]
+            .filter(Boolean)
+            .join(' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+          this.currentSessionInterim = '';
+          options.onTranscriptUpdate?.('', this.accumulatedFinalTranscript);
+        }
+
+        // Asynchronous delay restart to avoid Chrome InvalidStateError on continuous recognition
+        this.sttRestartTimeout = setTimeout(() => {
+          if (this.isRecording && !this.sttBlocked) {
+            try {
+              this.speechRecognition?.start();
+            } catch {
+              try {
+                this.startSpeechRecognition(options);
+              } catch {
+                // ignore
+              }
+            }
+          }
+        }, 120);
+      };
+
+      this.speechRecognition.start();
     } catch (e) {
       console.warn('SpeechRecognition initialization notice:', e);
-      return null;
     }
   }
 
@@ -51,10 +119,14 @@ export class LiveRecorderService {
 
     try {
       this.accumulatedFinalTranscript = '';
-      this.currentSessionFinal = '';
       this.currentSessionInterim = '';
       this.audioChunks = [];
       this.currentLanguage = options.lang || 'en-IN';
+      this.sttBlocked = false;
+      if (this.sttRestartTimeout) {
+        clearTimeout(this.sttRestartTimeout);
+        this.sttRestartTimeout = null;
+      }
 
       // 1. Request microphone access
       this.mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -80,12 +152,6 @@ export class LiveRecorderService {
       source.connect(this.analyserNode);
 
       // 3. Setup MediaRecorder with a MIME type that decodeAudioData can handle.
-      // Priority order (best → fallback):
-      //   audio/webm;codecs=pcm   → Chrome/Edge: raw linear PCM, always decodable
-      //   audio/ogg;codecs=opus   → Firefox: natively supported by decodeAudioData
-      //   audio/ogg               → Firefox fallback
-      //   audio/mp4               → Safari: AAC in MP4
-      //   audio/webm              → last resort (opus-coded webm may fail decodeAudioData)
       const mimePreference = [
         'audio/webm;codecs=pcm',
         'audio/ogg;codecs=opus',
@@ -115,77 +181,8 @@ export class LiveRecorderService {
         options.onTimeUpdate?.(elapsed);
       }, 100);
 
-      // 5. Start live speech recognition (Desktop only)
-      // Note: Mobile OSes (especially Android) forbid Google Speech Services and browser MediaRecorder from capturing the hardware mic concurrently.
-      // On mobile devices, running STT simultaneously throws "Google cannot record now as Chrome is recording".
-      // We therefore handle mobile speech recognition post-recording in the Review screen or via intelligent acoustic cadence alignment.
-      const isMobileDevice = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      let sttBlocked = false;
-
-      if (!isMobileDevice) {
-        this.speechRecognition = this.initSpeechRecognition(this.currentLanguage);
-        if (this.speechRecognition) {
-          this.speechRecognition.onresult = (event: any) => {
-            let interim = '';
-            let finalAcc = '';
-            for (let i = 0; i < event.results.length; ++i) {
-              const res = event.results[i];
-              if (res.isFinal) {
-                finalAcc += res[0].transcript + ' ';
-              } else {
-                interim += res[0].transcript;
-              }
-            }
-            this.currentSessionFinal = finalAcc;
-            this.currentSessionInterim = interim;
-
-            const totalTrans = [this.accumulatedFinalTranscript, this.currentSessionFinal, interim]
-              .filter(Boolean)
-              .join(' ')
-              .replace(/\s+/g, ' ')
-              .trim();
-
-            options.onTranscriptUpdate?.(interim, totalTrans);
-          };
-
-          this.speechRecognition.onerror = (e: any) => {
-            console.debug('Speech recognition event:', e?.error);
-            if (e?.error === 'audio-capture' || e?.error === 'not-allowed' || e?.error === 'service-not-allowed') {
-              sttBlocked = true;
-            }
-          };
-
-          this.speechRecognition.onend = () => {
-            if (sttBlocked) return;
-
-            // Commit current session's finalized text so it is never lost across pauses
-            if (this.currentSessionFinal.trim()) {
-              this.accumulatedFinalTranscript = [this.accumulatedFinalTranscript, this.currentSessionFinal]
-                .filter(Boolean)
-                .join(' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-              this.currentSessionFinal = '';
-              this.currentSessionInterim = '';
-            }
-
-            // Restart recognition if still actively recording and not blocked
-            if (this.isRecording && this.speechRecognition && !sttBlocked) {
-              try {
-                this.speechRecognition.start();
-              } catch {
-                // ignore if already running or stopped
-              }
-            }
-          };
-
-          try {
-            this.speechRecognition.start();
-          } catch {
-            // ignore speech recognition start failure
-          }
-        }
-      }
+      // 5. Start live speech recognition simultaneously (enabled for all devices: Mobile & Desktop)
+      this.startSpeechRecognition(options);
 
       return true;
     } catch (err: any) {
@@ -212,9 +209,16 @@ export class LiveRecorderService {
 
       const duration = (Date.now() - this.recordingStartTime) / 1000;
 
+      this.sttBlocked = true;
+      if (this.sttRestartTimeout) {
+        clearTimeout(this.sttRestartTimeout);
+        this.sttRestartTimeout = null;
+      }
+
       if (this.speechRecognition) {
         try {
           this.speechRecognition.onend = null;
+          this.speechRecognition.onerror = null;
           this.speechRecognition.stop();
         } catch {
           // ignore
@@ -224,7 +228,7 @@ export class LiveRecorderService {
       this.mediaRecorder.onstop = () => {
         const mimeType = this.mediaRecorder?.mimeType || 'audio/webm';
         const blob = new Blob(this.audioChunks, { type: mimeType });
-        const transcript = [this.accumulatedFinalTranscript, this.currentSessionFinal, this.currentSessionInterim]
+        const transcript = [this.accumulatedFinalTranscript, this.currentSessionInterim]
           .filter(Boolean)
           .join(' ')
           .replace(/\s+/g, ' ')
@@ -239,9 +243,15 @@ export class LiveRecorderService {
   }
 
   public cancelRecording(): void {
+    this.sttBlocked = true;
+    if (this.sttRestartTimeout) {
+      clearTimeout(this.sttRestartTimeout);
+      this.sttRestartTimeout = null;
+    }
     if (this.speechRecognition) {
       try { 
         this.speechRecognition.onend = null;
+        this.speechRecognition.onerror = null;
         this.speechRecognition.stop(); 
       } catch { /* ignore */ }
     }
@@ -253,6 +263,11 @@ export class LiveRecorderService {
 
   private cleanup(): void {
     this.isRecording = false;
+    this.sttBlocked = true;
+    if (this.sttRestartTimeout) {
+      clearTimeout(this.sttRestartTimeout);
+      this.sttRestartTimeout = null;
+    }
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
       this.timerInterval = null;
