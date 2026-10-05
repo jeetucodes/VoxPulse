@@ -67,6 +67,13 @@ export class LiveRecorderService {
 
       // 2. Setup Web Audio API analyser for live visualizer
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      if (this.audioContext.state === 'suspended') {
+        try {
+          await this.audioContext.resume();
+        } catch {
+          // ignore
+        }
+      }
       const source = this.audioContext.createMediaStreamSource(this.mediaStream);
       this.analyserNode = this.audioContext.createAnalyser();
       this.analyserNode.fftSize = 256;
@@ -108,62 +115,75 @@ export class LiveRecorderService {
         options.onTimeUpdate?.(elapsed);
       }, 100);
 
-      // 5. Start live speech recognition with user selected language
-      this.speechRecognition = this.initSpeechRecognition(this.currentLanguage);
-      if (this.speechRecognition) {
-        this.speechRecognition.onresult = (event: any) => {
-          let interim = '';
-          let finalAcc = '';
-          for (let i = 0; i < event.results.length; ++i) {
-            const res = event.results[i];
-            if (res.isFinal) {
-              finalAcc += res[0].transcript + ' ';
-            } else {
-              interim += res[0].transcript;
+      // 5. Start live speech recognition (Desktop only)
+      // Note: Mobile OSes (especially Android) forbid Google Speech Services and browser MediaRecorder from capturing the hardware mic concurrently.
+      // On mobile devices, running STT simultaneously throws "Google cannot record now as Chrome is recording".
+      // We therefore handle mobile speech recognition post-recording in the Review screen or via intelligent acoustic cadence alignment.
+      const isMobileDevice = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      let sttBlocked = false;
+
+      if (!isMobileDevice) {
+        this.speechRecognition = this.initSpeechRecognition(this.currentLanguage);
+        if (this.speechRecognition) {
+          this.speechRecognition.onresult = (event: any) => {
+            let interim = '';
+            let finalAcc = '';
+            for (let i = 0; i < event.results.length; ++i) {
+              const res = event.results[i];
+              if (res.isFinal) {
+                finalAcc += res[0].transcript + ' ';
+              } else {
+                interim += res[0].transcript;
+              }
             }
-          }
-          this.currentSessionFinal = finalAcc;
-          this.currentSessionInterim = interim;
+            this.currentSessionFinal = finalAcc;
+            this.currentSessionInterim = interim;
 
-          const totalTrans = [this.accumulatedFinalTranscript, this.currentSessionFinal, interim]
-            .filter(Boolean)
-            .join(' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-
-          options.onTranscriptUpdate?.(interim, totalTrans);
-        };
-
-        this.speechRecognition.onerror = (e: any) => {
-          console.debug('Speech recognition event:', e?.error);
-        };
-
-        this.speechRecognition.onend = () => {
-          // Commit current session's finalized text so it is never lost across pauses
-          if (this.currentSessionFinal.trim()) {
-            this.accumulatedFinalTranscript = [this.accumulatedFinalTranscript, this.currentSessionFinal]
+            const totalTrans = [this.accumulatedFinalTranscript, this.currentSessionFinal, interim]
               .filter(Boolean)
               .join(' ')
               .replace(/\s+/g, ' ')
               .trim();
-            this.currentSessionFinal = '';
-            this.currentSessionInterim = '';
-          }
 
-          // Restart recognition if still actively recording (browsers time out on natural silence)
-          if (this.isRecording && this.speechRecognition) {
-            try {
-              this.speechRecognition.start();
-            } catch {
-              // ignore if already running or stopped
+            options.onTranscriptUpdate?.(interim, totalTrans);
+          };
+
+          this.speechRecognition.onerror = (e: any) => {
+            console.debug('Speech recognition event:', e?.error);
+            if (e?.error === 'audio-capture' || e?.error === 'not-allowed' || e?.error === 'service-not-allowed') {
+              sttBlocked = true;
             }
-          }
-        };
+          };
 
-        try {
-          this.speechRecognition.start();
-        } catch {
-          // ignore speech recognition start failure
+          this.speechRecognition.onend = () => {
+            if (sttBlocked) return;
+
+            // Commit current session's finalized text so it is never lost across pauses
+            if (this.currentSessionFinal.trim()) {
+              this.accumulatedFinalTranscript = [this.accumulatedFinalTranscript, this.currentSessionFinal]
+                .filter(Boolean)
+                .join(' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+              this.currentSessionFinal = '';
+              this.currentSessionInterim = '';
+            }
+
+            // Restart recognition if still actively recording and not blocked
+            if (this.isRecording && this.speechRecognition && !sttBlocked) {
+              try {
+                this.speechRecognition.start();
+              } catch {
+                // ignore if already running or stopped
+              }
+            }
+          };
+
+          try {
+            this.speechRecognition.start();
+          } catch {
+            // ignore speech recognition start failure
+          }
         }
       }
 

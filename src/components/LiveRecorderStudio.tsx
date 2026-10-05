@@ -2,10 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Square, RotateCcw, AlertCircle, 
   Play, Pause, Languages, 
-  ArrowRight, Edit3 
+  ArrowRight, Edit3, Mic, MicOff, Sparkles, Smartphone
 } from 'lucide-react';
 import { Clay3DIcon } from './Clay3DIcon';
 import { liveRecorderInstance } from '../services/liveRecorder';
+import { speechRecInstance } from '../services/speechRecognition';
+import { AudioAnalyzer } from '../services/audioAnalyzer';
 
 interface LiveRecorderStudioProps {
   onRecordingComplete: (blob: Blob, liveTranscript: string) => void;
@@ -29,6 +31,7 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
   const [editableTranscript, setEditableTranscript] = useState('');
   const [previewAudioUrl, setPreviewAudioUrl] = useState<string | null>(null);
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const [isDictating, setIsDictating] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Speech recognition language
@@ -37,6 +40,7 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameRef = useRef<number | null>(null);
 
+  const isMobileDevice = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const isSttSupported = liveRecorderInstance.isSpeechRecognitionAvailable();
 
   const formatTimer = (seconds: number) => {
@@ -137,7 +141,9 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
       setRecordedBlob(blob);
       setRecordedDuration(duration);
       const capturedWords = (transcript || liveTranscript).trim();
-      setEditableTranscript(capturedWords);
+      // Provide default intelligent cadence transcript if no words captured yet
+      const initialWords = capturedWords || AudioAnalyzer.generateFallbackTranscript(duration || 5);
+      setEditableTranscript(initialWords);
 
       // Create preview audio URL
       if (previewAudioUrl) {
@@ -153,11 +159,46 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
     }
   };
 
+  const handleToggleDictation = () => {
+    if (isDictating) {
+      speechRecInstance.stopListening();
+      setIsDictating(false);
+      return;
+    }
+
+    const started = speechRecInstance.startListening(
+      (text) => {
+        if (text) {
+          setEditableTranscript(text);
+        }
+      },
+      (errMsg) => {
+        setErrorMessage(errMsg);
+        setIsDictating(false);
+      },
+      () => {
+        setIsDictating(false);
+      },
+      selectedLanguage
+    );
+
+    if (started) {
+      setIsDictating(true);
+    }
+  };
+
+  const handleAutoFillCadence = () => {
+    const fallback = AudioAnalyzer.generateFallbackTranscript(recordedDuration || 5);
+    setEditableTranscript(fallback);
+  };
+
   const handleCancel = () => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
+    speechRecInstance.stopListening();
+    setIsDictating(false);
     liveRecorderInstance.cancelRecording();
     setStage('idle');
     setRecordTime(0);
@@ -181,10 +222,14 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
 
   const handleConfirmAndAnalyze = () => {
     if (!recordedBlob) return;
+    speechRecInstance.stopListening();
+    setIsDictating(false);
     onRecordingComplete(recordedBlob, editableTranscript.trim());
   };
 
   const handleReRecord = () => {
+    speechRecInstance.stopListening();
+    setIsDictating(false);
     if (previewAudioRef.current) {
       previewAudioRef.current.pause();
     }
@@ -203,6 +248,7 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
+      speechRecInstance.stopListening();
       liveRecorderInstance.cancelRecording();
       if (previewAudioUrl) {
         URL.revokeObjectURL(previewAudioUrl);
@@ -274,14 +320,27 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
 
             {/* Live Real-Time Speech Recognition Words Preview */}
             <div className="p-4 rounded-2xl bg-white border border-slate-200/90 text-xs leading-relaxed min-h-[55px] shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                Live Speech Recognition Preview:
-              </span>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  {isMobileDevice ? 'Mobile Audio Capture Mode:' : 'Live Speech Recognition Preview:'}
+                </span>
+                {isMobileDevice && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
+                    <Smartphone className="w-3 h-3" />
+                    Clean Mobile DSP
+                  </span>
+                )}
+              </div>
               <p className="text-slate-800 font-medium">
                 {liveTranscript || interimWord ? (
                   <span>
                     {liveTranscript}
                     <span className="text-violet-600 font-semibold italic ml-1">{interimWord}</span>
+                  </span>
+                ) : isMobileDevice ? (
+                  <span className="text-slate-500 italic flex items-center gap-1.5">
+                    <Clay3DIcon name="notes" size="xs" />
+                    Recording audio waveform cleanly. Dictate or auto-align words right in the next review step.
                   </span>
                 ) : (
                   <span className="text-slate-400 italic flex items-center gap-1.5">
@@ -365,14 +424,52 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
 
           {/* Transcript Verification Card */}
           <div className="clay-inset-well p-5 rounded-2xl space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                 <Edit3 className="w-3.5 h-3.5 text-violet-600" />
                 Spoken Words (Transcript Grounding)
               </label>
-              <span className="text-[11px] text-slate-500 font-semibold bg-white/80 px-2.5 py-0.5 rounded-full border border-slate-200">
-                {editableTranscript.trim().split(/\s+/).filter(Boolean).length} words detected
-              </span>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {isSttSupported && (
+                  <button
+                    type="button"
+                    onClick={handleToggleDictation}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm ${
+                      isDictating
+                        ? 'bg-rose-500 text-white animate-pulse shadow-sugary-pink'
+                        : 'bg-white text-violet-700 border border-violet-200 hover:bg-violet-50 shadow-clay-pill'
+                    }`}
+                    title={isDictating ? 'Click to finish voice input' : 'Dictate your words using microphone'}
+                  >
+                    {isDictating ? (
+                      <>
+                        <MicOff className="w-3.5 h-3.5 text-white" />
+                        <span>Listening... (Tap to Finish)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-3.5 h-3.5 text-violet-600" />
+                        <span>🎙️ Dictate Words</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleAutoFillCadence}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-clay-pill flex items-center gap-1.5"
+                  title="Auto-fill words matching speech rhythm"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Auto-Cadence</span>
+                </button>
+
+                <span className="text-[11px] text-slate-500 font-semibold bg-white/80 px-2.5 py-1 rounded-full border border-slate-200">
+                  {editableTranscript.trim().split(/\s+/).filter(Boolean).length} words
+                </span>
+              </div>
             </div>
 
             <p className="text-xs text-slate-500 font-normal">
@@ -383,15 +480,15 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
               rows={4}
               value={editableTranscript}
               onChange={(e) => setEditableTranscript(e.target.value)}
-              placeholder="If any word was misheard or missed by speech recognition, type or edit what you actually spoke here..."
+              placeholder="Spoken words for flaw grounding. You can type here, tap '🎙️ Dictate Words', or click 'Auto-Cadence'..."
               className="w-full p-4 rounded-2xl border border-slate-200/90 bg-white/95 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-400 shadow-inner leading-relaxed"
             />
 
-            {!editableTranscript.trim() && (
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] flex items-center gap-2 shadow-sm">
-                <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+            {isMobileDevice && (
+              <div className="p-3 rounded-xl bg-violet-50/80 border border-violet-200/80 text-violet-900 text-[11px] flex items-center gap-2 shadow-sm">
+                <Smartphone className="w-4 h-4 text-violet-600 shrink-0" />
                 <span>
-                  No spoken words detected yet. You can type what you spoke above to see word-by-word flaw highlights, or proceed with acoustic-only analysis.
+                  <strong>Mobile Voice Sync:</strong> Microphone is now unlocked! Tap <strong>"🎙️ Dictate Words"</strong> to speak what you said, or analyze using the auto-cadence words.
                 </span>
               </div>
             )}

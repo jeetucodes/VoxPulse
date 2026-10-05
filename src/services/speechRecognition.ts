@@ -32,7 +32,8 @@ export class SpeechRecognitionService {
   public startListening(
     onResult: (transcript: string, isFinal: boolean) => void,
     onError: (errorMsg: string) => void,
-    onEnd: () => void
+    onEnd: () => void,
+    lang: string = 'en-IN'
   ): boolean {
     if (!this.recognition) {
       onError('Web Speech API is not supported in this browser. Please use Chrome or Edge.');
@@ -41,31 +42,35 @@ export class SpeechRecognitionService {
 
     if (this.isListening) {
       this.stopListening();
-      return false;
     }
 
     try {
+      this.recognition.lang = lang;
       this.isListening = true;
 
       this.recognition.onresult = (event: any) => {
         let interimTranscript = '';
         let finalTranscript = '';
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = 0; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
+            finalTranscript += event.results[i][0].transcript + ' ';
           } else {
             interimTranscript += event.results[i][0].transcript;
           }
         }
 
-        const text = finalTranscript || interimTranscript;
+        const text = (finalTranscript + interimTranscript).trim();
         onResult(text, !!finalTranscript);
       };
 
       this.recognition.onerror = (event: any) => {
+        if (event.error === 'no-speech') {
+          // Normal timeout if user hasn't spoken yet
+          return;
+        }
         this.isListening = false;
-        onError(event.error === 'not-allowed' ? 'Microphone permission denied.' : `Voice input error: ${event.error}`);
+        onError(event.error === 'not-allowed' ? 'Microphone permission denied.' : `Voice input notice: ${event.error}`);
         onEnd();
       };
 
@@ -76,7 +81,7 @@ export class SpeechRecognitionService {
 
       this.recognition.start();
       return true;
-    } catch (e) {
+    } catch {
       this.isListening = false;
       onError('Failed to initiate microphone.');
       onEnd();
