@@ -29,7 +29,21 @@ export class LiveRecorderService {
     return !!(win?.SpeechRecognition || win?.webkitSpeechRecognition);
   }
 
+  public isMobile(): boolean {
+    if (typeof navigator === 'undefined') return false;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
   private startSpeechRecognition(options: LiveRecorderOptions): void {
+    if (this.isMobile()) {
+      // Mobile OS (especially Android Chrome) does not allow concurrent microphone hardware access
+      // between WebRTC MediaRecorder and native Google Speech Recognition OS service.
+      // Launching STT simultaneously causes the Android OS system toast:
+      // "Speech Recognition and Synthesis from Google cannot record now as Chrome is recording audio".
+      // We safely bypass concurrent STT on mobile and enable post-recording dictation/cadence review instead.
+      return;
+    }
+
     const win = typeof window !== 'undefined' ? (window as any) : null;
     const SpeechRecognitionClass = win?.SpeechRecognition || win?.webkitSpeechRecognition;
     if (!SpeechRecognitionClass) {
@@ -73,8 +87,18 @@ export class LiveRecorderService {
 
       this.speechRecognition.onerror = (e: any) => {
         console.debug('Speech recognition event:', e?.error);
-        if (e?.error === 'not-allowed' || e?.error === 'service-not-allowed') {
+        // If microphone hardware is locked by OS/browser, permission denied, or service unavailable, permanently halt retries
+        if (
+          e?.error === 'audio-capture' ||
+          e?.error === 'not-allowed' ||
+          e?.error === 'service-not-allowed' ||
+          e?.error === 'aborted'
+        ) {
           this.sttBlocked = true;
+          if (this.sttRestartTimeout) {
+            clearTimeout(this.sttRestartTimeout);
+            this.sttRestartTimeout = null;
+          }
         }
       };
 
@@ -181,8 +205,12 @@ export class LiveRecorderService {
         options.onTimeUpdate?.(elapsed);
       }, 100);
 
-      // 5. Start live speech recognition simultaneously (enabled for all devices: Mobile & Desktop)
-      this.startSpeechRecognition(options);
+      // 5. Start live speech recognition simultaneously for desktop browsers only.
+      // Mobile browsers (Android/iOS) lock hardware microphone exclusively to MediaRecorder,
+      // so concurrent STT is safely bypassed on mobile to avoid OS toast conflicts.
+      if (!this.isMobile()) {
+        this.startSpeechRecognition(options);
+      }
 
       return true;
     } catch (err: any) {

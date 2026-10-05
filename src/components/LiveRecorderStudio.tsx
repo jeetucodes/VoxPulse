@@ -84,11 +84,17 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
       for (let i = 0; i < numBars; i++) {
         const dataIdx = Math.floor((i / numBars) * bufferLength * 0.7);
         const value = dataArray[dataIdx] || 0;
-        const barHeight = Math.max(4, (value / 255) * (height - 12));
+        
+        // Dynamic animation: amplify quiet speech for responsiveness, and show gentle breathing wave when silent
+        const normalized = Math.min(1, value / 150);
+        const idleWave = Math.sin((Date.now() / 250) + (i * 0.35)) * 3.5;
+        const activeHeight = normalized * (height - 18);
+        const barHeight = Math.max(6, activeHeight + (value < 15 ? 4 + idleWave : 0));
+        
         const x = i * (barWidth + gap);
         const y = (height - barHeight) / 2;
 
-        ctx.fillStyle = '#7C3AED'; // Violet spectrum bars
+        ctx.fillStyle = value > 25 ? '#7C3AED' : '#A78BFA'; // Vibrant violet when speaking, soft lavender when quiet
         ctx.beginPath();
         ctx.roundRect(x, y, barWidth, barHeight, 2);
         ctx.fill();
@@ -326,11 +332,11 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                   </span>
-                  Simultaneous Live Transcription:
+                  {isMobileDevice ? 'Live Audio Capture:' : 'Simultaneous Live Transcription:'}
                 </span>
                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full border border-violet-200">
                   <Sparkles className="w-3 h-3 text-violet-600" />
-                  Real-time DSP + STT
+                  {isMobileDevice ? 'Studio-Grade Audio DSP' : 'Real-time DSP + STT'}
                 </span>
               </div>
               <p className="text-slate-800 text-sm sm:text-base font-medium leading-relaxed">
@@ -342,6 +348,11 @@ export const LiveRecorderStudio: React.FC<LiveRecorderStudioProps> = ({
                         {interimWord}
                       </span>
                     )}
+                  </span>
+                ) : isMobileDevice ? (
+                  <span className="text-slate-600 text-xs sm:text-sm font-medium flex items-center gap-2">
+                    <Clay3DIcon name="mic" size="xs" />
+                    <span>Recording clean speech live. Tap "Stop Recording & Review" to verify spoken words.</span>
                   </span>
                 ) : (
                   <span className="text-slate-400 italic flex items-center gap-2">
