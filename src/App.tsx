@@ -271,7 +271,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-dot-pattern text-slate-900 flex flex-col font-body selection:bg-violet-600 selection:text-white relative overflow-hidden">
+    <div className="min-h-screen bg-dot-pattern text-slate-900 flex flex-col font-body selection:bg-violet-600 selection:text-white relative overflow-x-hidden">
       
       {/* Subtle Ambient Glow Gradients (Modern Luxury SaaS) */}
       <div className="fixed top-0 left-1/4 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-violet-500/8 via-indigo-500/5 to-transparent blur-3xl -z-10 pointer-events-none animate-pulse-glow"></div>
@@ -292,16 +292,21 @@ export function App() {
         hasResult={!!analysisResult}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-8">
-        
-        {currentView === 'landing' ? (
+      {/* Landing Page - Full Width, NO container padding */}
+      {currentView === 'landing' && (
+        <div className="flex-1">
           <LandingPage
             onGetStarted={handleGetStartedFromLanding}
             onSelectBenchmark={handleSelectBenchmarkFromLanding}
             onOpenJsonModal={() => setIsJsonModalOpen(true)}
           />
-        ) : (
+        </div>
+      )}
+
+      {/* Main Content Area - Studio only */}
+      {currentView === 'studio' && (
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-8">
+        
           <>
             {/* Analysis error banner */}
             {analysisError && !analysisResult && (
@@ -454,8 +459,8 @@ export function App() {
           </div>
         )}
       </>
-    )}
-  </main>
+      </main>
+      )}
 
   {/* Studio Footer */}
   {currentView === 'studio' && (
